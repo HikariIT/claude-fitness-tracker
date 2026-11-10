@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run --passWithNoTests",
-    "db:check": "tsx --conditions=react-server --env-file-if-exists=.env.local src/db/check.ts"
+    "db:check": "tsx --conditions=react-server --env-file-if-exists=.env.local src/db/check.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx --conditions=react-server --env-file-if-exists=.env.local src/db/migrate.ts",
+    "db:seed": "tsx --conditions=react-server --env-file-if-exists=.env.local src/db/seed.ts"
   },
   "dependencies": {
     "drizzle-orm": "0.45.4",

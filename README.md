@@ -17,7 +17,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. PostgreSQL is published on `localhost:5432` (user `postgres`, password `postgres`, database `fitness_tracker`).
 
-To run the app without Docker, start PostgreSQL yourself, then run `npm run dev`.
+To run the app without Docker, start PostgreSQL yourself, then run `npm run db:migrate` and `npm run dev`. The dev compose already runs `db:migrate` before the app starts.
+
+To load dev sample data, run `npm run db:seed`. It wipes all tables first and then checks the relations.
 
 You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
 

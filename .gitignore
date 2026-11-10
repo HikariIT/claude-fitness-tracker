@@ -32,6 +32,17 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# claude code (local, per-user settings)
+.claude/settings.local.json
+
+# editors / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+Thumbs.db
 
 # vercel
 .vercel

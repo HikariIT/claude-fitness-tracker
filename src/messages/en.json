@@ -1,0 +1,57 @@
+{
+  "app": {
+    "name": "Fit Notebook",
+    "description": "Food and workout diary with a calorie balance"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "skip": "Skip to content",
+    "profile": "Personal data",
+    "foods": "Food database",
+    "planner": "Meal planner",
+    "workouts": "Workouts",
+    "balance": "Balance"
+  },
+  "language": {
+    "label": "Language",
+    "pl": "Polski",
+    "en": "English"
+  },
+  "pages": {
+    "profile": {
+      "title": "Personal data",
+      "description": "Height, weight, age and activity to estimate your calorie requirement."
+    },
+    "foods": {
+      "title": "Food database",
+      "description": "Your foods and dishes with nutrition values per 100 g."
+    },
+    "planner": {
+      "title": "Meal planner",
+      "description": "Meals for the day in categories you choose."
+    },
+    "workouts": {
+      "title": "Workouts",
+      "description": "Treadmill and training sessions done on a given day."
+    },
+    "balance": {
+      "title": "Balance",
+      "description": "Daily calorie balance and whether you are in a deficit."
+    }
+  },
+  "common": {
+    "emptyTitle": "Nothing here yet",
+    "comingSoon": "This view is coming soon."
+  },
+  "datePager": {
+    "label": "Day picker",
+    "previous": "Previous day",
+    "next": "Next day",
+    "today": "Today"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This notebook page is empty.",
+    "back": "Back to the meal planner"
+  }
+}

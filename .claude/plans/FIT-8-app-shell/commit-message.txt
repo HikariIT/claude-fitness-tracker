@@ -1,0 +1,7 @@
+[FIT-8]: Build App Shell with Notepad Theme, Navigation and Language Map (PL/EN)
+
+- Add next-intl 4.14.10 with pl/en routing, request config, proxy, AppConfig typing, PL/EN message files and key-parity test
+- Add shadcn primitives (11, hand-written components.json), palette @theme with notebook-paper utility in globals.css, and Nunito/Patrick Hand fonts module
+- Add pure ISO date helpers with tests, and layout components (NotebookSheet, PageHeader, EmptyState, LanguageToggle, AppNav) plus data components (StatCard, DatePager)
+- Move app to src/app/[locale] with shell layout, locale index redirect to planner, five placeholder pages, catch-all and localized not-found; remove starter layout, page and SVG assets
+- Add CLAUDE.md navigators for src/i18n, src/app and src/components, and update CLAUDE_ARCHITECTURE.md with i18n/UI decisions, the [locale] route tree, planner/profile renames and the five-view scope

@@ -56,3 +56,7 @@ bun.lock
 bun.lockb
 yarn.lock
 pnpm-lock.yaml
+
+# Impeccable
+/.impeccable
+/.claude/skills/impeccable

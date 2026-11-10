@@ -1,0 +1,57 @@
+{
+  "app": {
+    "name": "Notatnik Fit",
+    "description": "Dziennik jedzenia i treningów z bilansem kalorii"
+  },
+  "nav": {
+    "label": "Główna nawigacja",
+    "skip": "Przejdź do treści",
+    "profile": "Dane osobowe",
+    "foods": "Baza produktów",
+    "planner": "Plan posiłków",
+    "workouts": "Treningi",
+    "balance": "Bilans"
+  },
+  "language": {
+    "label": "Język",
+    "pl": "Polski",
+    "en": "English"
+  },
+  "pages": {
+    "profile": {
+      "title": "Dane osobowe",
+      "description": "Wzrost, waga, wiek i aktywność do wyliczenia zapotrzebowania kalorycznego."
+    },
+    "foods": {
+      "title": "Baza produktów",
+      "description": "Twoje produkty i dania z wartościami odżywczymi na 100 g."
+    },
+    "planner": {
+      "title": "Plan posiłków",
+      "description": "Posiłki na dany dzień w wybranych kategoriach."
+    },
+    "workouts": {
+      "title": "Treningi",
+      "description": "Bieżnia i trening siłowy wykonane danego dnia."
+    },
+    "balance": {
+      "title": "Bilans",
+      "description": "Dzienny bilans kalorii i informacja o deficycie."
+    }
+  },
+  "common": {
+    "emptyTitle": "Nic tu jeszcze nie ma",
+    "comingSoon": "Ten widok pojawi się wkrótce."
+  },
+  "datePager": {
+    "label": "Wybór dnia",
+    "previous": "Poprzedni dzień",
+    "next": "Następny dzień",
+    "today": "Dziś"
+  },
+  "notFound": {
+    "title": "Nie znaleziono strony",
+    "description": "Ta kartka notatnika jest pusta.",
+    "back": "Wróć do planu posiłków"
+  }
+}

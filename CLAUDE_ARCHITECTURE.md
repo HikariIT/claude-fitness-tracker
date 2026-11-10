@@ -1,7 +1,7 @@
 # Architecture Plan: Fitness Tracker
 
 **Stack:** Next.js 16.4 App Router (`cacheComponents: true`), React 19.3, TypeScript strict, Tailwind 4 + shadcn/ui, PostgreSQL + Drizzle ORM, Zod, Vitest, npm.
-**Scope:** one user with no auth. V1 views are the food diary and the food library. The workout schema and views are part of V1.
+**Scope:** one user with no auth. Five views: profile, foods, planner, workouts, balance.
 
 ## Decisions
 | Topic | Choice | Why |
@@ -11,6 +11,8 @@
 | Backend | Server Components read through the DAL; Server Actions mutate | Idiomatic Next 16, no REST layer needed |
 | Caching | DAL reads use `"use cache"` + `cacheTag`; actions call `updateTag` | Required by `cacheComponents` |
 | Users | None. Settings is a singleton row (`id = 1`) with personal data and goals | Add `userId` FKs later if auth is ever needed |
+| i18n | next-intl, locale URL segment (/pl, /en), JSON messages in src/messages | No raw UI strings; bilingual user |
+| UI | shadcn/ui + Tailwind 4 tokens from the palette, notebook look, Patrick Hand + Nunito | CLAUDE.md style rule |
 
 ## Directory tree
 ```
@@ -22,33 +24,45 @@ fitness-tracker/
 └─ src/
    ├─ app/                      # ROUTING ONLY: pages, layouts, loading/error. Thin.
    │  ├─ CLAUDE.md
-   │  ├─ layout.tsx             # Shell: <AppNav/>, fonts, theme
-   │  ├─ page.tsx               # Redirects to /diary (dashboard later)
-   │  ├─ diary/
-   │  │  ├─ page.tsx            # Today's diary
-   │  │  └─ [date]/page.tsx     # Diary for YYYY-MM-DD: meals, entries, totals vs goal
-   │  ├─ foods/
-   │  │  ├─ page.tsx            # Food library list + search
-   │  │  ├─ new/page.tsx
-   │  │  └─ [foodId]/edit/page.tsx
-   │  ├─ settings/page.tsx      # Daily kcal/macro goals (small, needed for "vs goal")
-   │  └─ (later) workouts/, exercises/, dashboard/, history/
+   │  ├─ fonts.ts               # next/font/google: Nunito (font-sans), Patrick Hand (font-hand)
+   │  ├─ [locale]/
+   │  │  ├─ layout.tsx          # Root layout: html lang, fonts, NextIntlClientProvider, AppNav, Toaster
+   │  │  ├─ page.tsx            # Redirects to /planner
+   │  │  ├─ profile/page.tsx    # Personal data (placeholder)
+   │  │  ├─ foods/page.tsx      # Food database (placeholder)
+   │  │  ├─ planner/page.tsx    # Food planner (placeholder)
+   │  │  ├─ workouts/page.tsx   # Workout planner (placeholder)
+   │  │  ├─ balance/page.tsx    # Total balance (placeholder)
+   │  │  ├─ [...rest]/page.tsx  # Catch-all → notFound()
+   │  │  └─ not-found.tsx       # Localized 404
    ├─ features/                 # Vertical slices: feature-specific UI + actions
    │  ├─ CLAUDE.md
-   │  ├─ diary/
+   │  ├─ planner/
    │  │  ├─ components/         # MealSection, EntryRow, AddEntryDialog, DayTotals
    │  │  └─ actions.ts          # "use server": addEntry, updateEntry, deleteEntry
    │  ├─ foods/
    │  │  ├─ components/         # FoodForm, FoodTable, FoodPicker
    │  │  └─ actions.ts          # createFood, updateFood, archiveFood
-   │  ├─ settings/              # GoalsForm + actions.ts
-   │  └─ workouts/              # (later) same shape
+   │  ├─ profile/               # Personal data form + actions.ts (was settings/)
+   │  ├─ workouts/              # Same shape
+   │  └─ balance/               # Daily balance components
    ├─ components/               # SHARED, feature-agnostic UI
    │  ├─ CLAUDE.md
    │  ├─ ui/                    # shadcn/ui primitives (generated; do not hand-edit much)
-   │  ├─ layout/                # AppNav, PageHeader, EmptyState
+   │  ├─ layout/                # AppNav, LanguageToggle, NotebookSheet, PageHeader, EmptyState
    │  ├─ forms/                 # FormField, NumberInput, SubmitButton (useActionState/pending)
-   │  └─ data/                  # MacroBar, KcalRing, StatCard, DatePager
+   │  └─ data/                  # StatCard, DatePager; later MacroBar, KcalRing
+   ├─ i18n/                     # next-intl: routing, navigation (Link/useRouter), request
+   │  ├─ CLAUDE.md
+   │  ├─ routing.ts             # Locales pl (default) + en, localePrefix "always"
+   │  ├─ navigation.ts          # Locale-aware Link, redirect, usePathname, useRouter
+   │  └─ request.ts             # Loads src/messages/<locale>.json
+   ├─ messages/                 # UI strings, same keys in both files
+   │  ├─ pl.json
+   │  ├─ en.json
+   │  └─ messages.test.ts       # Key parity and no empty strings
+   ├─ proxy.ts                  # Locale detection and redirect (Next 16 name for middleware)
+   ├─ global.d.ts               # AppConfig augmentation: typed message keys
    ├─ db/                       # DATABASE: schema + client + migrations
    │  ├─ CLAUDE.md
    │  ├─ client.ts              # `import "server-only"`; drizzle(pg Pool) singleton, schema + snake_case
@@ -91,7 +105,7 @@ Tests sit next to their code (`*.test.ts`). They focus on `lib/` and on `server/
 Every table has `createdAt` / `updatedAt` (`timestamptz`). Keys are integer identity columns, except the fixed `id = 1` of `settings`. Nutrition columns use `numeric` mapped to `number` through the Drizzle `mode` option. The client and `drizzle.config.ts` use `casing: "snake_case"`. Relations are classic `relations()` helpers in `schema/index.ts`. Types come from `typeof foods.$inferSelect` / `$inferInsert` and are never hand-written.
 
 ## Request flow
-`page.tsx` (Server Component) → `server/dal/*` (`"use cache"`, `cacheTag("diary:2026-11-10")`) → `db`
+`page.tsx` (Server Component) → `server/dal/*` (`"use cache"`, `cacheTag("planner:2026-11-10")`) → `db`
 Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → `server/services` → `updateTag(...)` → returns `ActionResult<T>`
 
 ## Layering rules
@@ -106,6 +120,7 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 |---|---|
 | `/CLAUDE.md` | Keep the existing text, then add: stack, commands (`npm run dev`, `db:generate`, `db:migrate`, `db:seed`, `test`), layering rules, a map of the sub-files |
 | `src/app/CLAUDE.md` | Route map, thin-page rule, loading/error conventions, "read the Next docs first" |
+| `src/i18n/CLAUDE.md` | Locale routing, navigation imports, no-raw-strings rule, message keys |
 | `src/features/CLAUDE.md` | Slice anatomy, how to add a feature, action template |
 | `src/components/CLAUDE.md` | Shared vs feature UI, shadcn add command, prop typing conventions |
 | `src/db/CLAUDE.md` | Schema conventions (snake_case DB, camelCase TS), snapshot rule, migration workflow |
@@ -116,6 +131,6 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 1. Move `app/` to `src/app`, and change the tsconfig paths entry `@/*` to `./src/*`.
 2. Add deps: `drizzle-orm pg zod drizzle-zod server-only`; dev: `drizzle-kit @types/pg vitest`.
 3. Add the Postgres service to the compose files, and add `DATABASE_URL` to `.env.local`/`.env.production`. (done: FIT-6, plus npm run db:check)
-4. Run `shadcn init` (Tailwind 4) and add the primitives.
+4. Run `shadcn init` (Tailwind 4) and add the primitives. (done: FIT-8)
 5. Write the schema, generate the first migration, and seed. (done: FIT-7, plus npm run db:generate / db:migrate / db:seed)
-6. Build foods, then settings, then the diary. Workouts come in phase 2.
+6. Build foods, then profile, then the planner, workouts and balance.

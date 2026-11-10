@@ -22,6 +22,9 @@ A plan is a folder `.claude/plans/<task_name>/`:
 | 1 | <Short title> | [subtask-1.md](subtask-1.md) | Planned |
 | 2 | <Short title> | [subtask-2.md](subtask-2.md) | Planned |
 <!-- Up to 5 rows. Status: Planned / In Progress / Done. Run subtasks in order; take the first row not marked Done. -->
+
+## Change Log
+<!-- Filled by /plan-realize: one bullet per finished subtask, "- <n>. <change>". Used to build commit-message.txt after the last subtask. -->
 ~~~
 
 ## `subtask-<n>.md`

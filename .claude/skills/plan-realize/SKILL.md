@@ -15,5 +15,19 @@ Implement exactly ONE subtask, then stop. Keep context small (well under 100K to
 5. Run the subtask's **Verify** step. Fix failures that are inside the subtask's scope.
 6. If the plan is wrong, or a file it needs is missing, stop. Leave the status `In Progress`, add a `**Blocked:**` line under the subtask and tell the user why.
 7. On success, set the status to `Done` and add a one-line `**Notes:**` under the subtask for the next agent (only if something deviated from the plan).
-8. If this subtask was the last one, so every row in "Implementation Progress" is now `Done`, and `plan.md` has a `**Linear:**` line, set that issue to `Done` with `mcp__linear-server__save_issue` (`id: <identifier>`, `state: "Done"`). Load the tool first with ToolSearch (`select:mcp__linear-server__save_issue`). Never do this when a subtask is blocked. If the update fails, say so in the reply.
-9. Reply with 1–3 lines: the subtask, the result and the verify output summary (and the Linear status change, if any).
+8. Append one bullet to the `## Change Log` section at the end of `plan.md` (create the section if it is missing): `- <n>. <what changed, in the imperative, one line>` (e.g. `- 2. Add Drizzle schema for foods and diary entries`). This log is the only record later agents have of your work, so describe the actual change, not the plan.
+9. If this subtask was the last one, so every row in "Implementation Progress" is now `Done`:
+   - Write the commit message for the whole plan to `commit-message.txt` in the plan folder. Build it only from the plan title and the `## Change Log` bullets (all subtasks, in order); do not read the subtask files or the diff for this:
+     ```
+     [<Linear identifier>]: <Task Name>
+
+     - <change log bullet 1, without the number>
+     - <change log bullet 2, without the number>
+     ```
+     If there is no `**Linear:**` line, the subject is just `<Task Name>`. Never add `Co-Authored-By` or any other attribution line. Do not run `git commit`; the user commits.
+   - If `plan.md` has a `**Linear:**` line, load both tools in one ToolSearch call (`select:mcp__linear-server__save_issue,mcp__linear-server__save_comment`), then:
+     - Post the commit message as a comment on the issue with `mcp__linear-server__save_comment` (`issueId: <identifier>`). Body: the line `Commit message:` followed by the message in a fenced code block, exactly as in `commit-message.txt`.
+     - Set the issue to `Done` with `mcp__linear-server__save_issue` (`id: <identifier>`, `state: "Done"`).
+     If either call fails, say which one in the reply; the commit message file stays either way.
+   Never do any of this when a subtask is blocked.
+10. Reply with 1–3 lines: the subtask, the result and the verify output summary (and the Linear status change and comment, if any). After the last subtask, also print the commit message in a code block.

@@ -123,6 +123,23 @@
     },
     "showArchived": "Show removed foods",
     "archivedBadge": "Removed",
+    "compositeBadge": "Dish",
+    "composite": {
+      "addTitle": "Add dish",
+      "editTitle": "Edit dish",
+      "description": "Made from other foods. Values per 100 g are calculated from the ingredients.",
+      "components": "Ingredients",
+      "searchLabel": "Add ingredient",
+      "searchPlaceholder": "Search foods…",
+      "noMatches": "No matching foods.",
+      "quantity": "Amount of {name}",
+      "emptyComponents": "No ingredients yet. Search above to add one.",
+      "totalWeight": "Ingredients weight: {grams} g",
+      "finalWeightG": "Final weight after cooking (optional)",
+      "finalWeightHint": "Leave empty to use the ingredients weight.",
+      "preview": "Per 100 g: {kcal} kcal · protein {proteinG} g · carbs {carbsG} g · fat {fatG} g",
+      "editHint": "Dishes that use this dish are recalculated. Days already logged keep their values."
+    },
     "empty": {
       "title": "No foods yet",
       "description": "Add your first food to start planning meals."
@@ -136,7 +153,11 @@
       "delete": "Delete",
       "save": "Save",
       "saving": "Saving…",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "addComposite": "Add dish",
+      "removeComponent": "Remove ingredient",
+      "showComponents": "Show ingredients of {name}",
+      "hideComponents": "Hide ingredients of {name}"
     },
     "dialog": {
       "addTitle": "Add food",
@@ -163,11 +184,14 @@
     "toast": {
       "created": "Food added",
       "updated": "Food saved",
+      "dishCreated": "Dish added",
+      "dishUpdated": "Dish saved",
       "archived": "Food removed",
       "restored": "Food restored",
       "nameTaken": "A food named “{name}” already exists.",
       "deleted": "Food deleted",
       "inUse": "“{name}” is used in logged meals, so it can’t be deleted. It stays removed from the list.",
+      "inComposite": "“{name}” is an ingredient of a dish, so it can’t be deleted. It stays removed from the list.",
       "failed": "Something went wrong. Try again."
     },
     "errors": {
@@ -179,7 +203,16 @@
       "carbsRange": "Enter carbohydrates from 0 to 100 g.",
       "fatRange": "Enter fat from 0 to 100 g.",
       "macrosSum": "Protein, carbohydrates and fat together cannot exceed 100 g.",
-      "foodInUse": "This food is used in logged meals and can’t be deleted."
+      "foodInUse": "This food is used in logged meals and can’t be deleted.",
+      "foodInComposite": "This food is an ingredient of a dish and can’t be deleted.",
+      "componentsRequired": "Add at least one ingredient.",
+      "componentsTooMany": "Use at most 30 ingredients.",
+      "componentDuplicate": "Each food can be added only once.",
+      "componentQuantityRange": "Enter an amount from 0.1 to 5000 g.",
+      "componentUnavailable": "An ingredient is no longer available. Remove it and try again.",
+      "componentCycle": "A dish can’t contain itself, directly or through another dish.",
+      "finalWeightRange": "Enter a weight from 1 to 20000 g.",
+      "finalWeightTooLow": "The final weight is too low for these ingredients."
     }
   },
   "common": {

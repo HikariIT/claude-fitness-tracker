@@ -2,9 +2,9 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Apple, Plus } from "lucide-react";
+import { Apple, CookingPot, Plus } from "lucide-react";
 import { toast } from "sonner";
-import type { Food } from "@/server/dal/foods";
+import type { Food, FoodComponent } from "@/server/dal/foods";
 import { restoreFoodAction } from "@/features/foods/actions";
 import { matchesQuery } from "@/lib/search";
 import { EmptyState } from "@/components/layout/EmptyState";
@@ -12,6 +12,7 @@ import { fieldControlClass } from "@/components/forms/field-styles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CompositeFoodDialog } from "./CompositeFoodDialog";
 import { FoodFormDialog } from "./FoodFormDialog";
 import { FoodsTable } from "./FoodsTable";
 import { ConfirmFoodDialog, type FoodConfirmIntent } from "./ConfirmFoodDialog";
@@ -19,14 +20,16 @@ import { ConfirmFoodDialog, type FoodConfirmIntent } from "./ConfirmFoodDialog";
 // D5: Polish collation for sorting by name.
 const collator = new Intl.Collator("pl", { sensitivity: "base" });
 
-type FoodsViewProps = { foods: Food[] };
+type FoodsViewProps = { foods: Food[]; components: FoodComponent[] };
 
-export function FoodsView({ foods }: FoodsViewProps) {
+export function FoodsView({ foods, components }: FoodsViewProps) {
   const t = useTranslations("foods");
   const [query, setQuery] = useState("");
   const [showArchived, setShowArchived] = useState(false);
   const [dialogFood, setDialogFood] = useState<Food | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [compositeFood, setCompositeFood] = useState<Food | null>(null);
+  const [compositeOpen, setCompositeOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<{
     food: Food;
     intent: FoodConfirmIntent;
@@ -44,11 +47,33 @@ export function FoodsView({ foods }: FoodsViewProps) {
     [foods, showArchived, query],
   );
 
+  const componentsByFood = useMemo(() => {
+    const map = new Map<number, FoodComponent[]>();
+    for (const c of components) {
+      const list = map.get(c.foodId);
+      if (list) list.push(c);
+      else map.set(c.foodId, [c]);
+    }
+    return map;
+  }, [components]);
+
+  const foodsById = useMemo(() => new Map(foods.map((f) => [f.id, f])), [foods]);
+
   const openAdd = () => {
     setDialogFood(null);
     setDialogOpen(true);
   };
+  const openAddComposite = () => {
+    setCompositeFood(null);
+    setCompositeOpen(true);
+  };
+  // D8: the type is fixed at creation, so a dish always opens the dish dialog.
   const openEdit = (food: Food) => {
+    if (food.isComposite) {
+      setCompositeFood(food);
+      setCompositeOpen(true);
+      return;
+    }
     setDialogFood(food);
     setDialogOpen(true);
   };
@@ -95,6 +120,10 @@ export function FoodsView({ foods }: FoodsViewProps) {
           <Plus aria-hidden="true" />
           {t("actions.add")}
         </Button>
+        <Button variant="outline" onClick={openAddComposite}>
+          <CookingPot aria-hidden="true" />
+          {t("actions.addComposite")}
+        </Button>
       </div>
 
       <p className="text-muted-foreground">{t("per100g")}</p>
@@ -106,6 +135,8 @@ export function FoodsView({ foods }: FoodsViewProps) {
       ) : (
         <FoodsTable
           foods={visible}
+          componentsByFood={componentsByFood}
+          foodsById={foodsById}
           pendingId={pendingId}
           onEdit={openEdit}
           onArchive={(food) => setConfirmTarget({ food, intent: "archive" })}
@@ -115,6 +146,13 @@ export function FoodsView({ foods }: FoodsViewProps) {
       )}
 
       <FoodFormDialog open={dialogOpen} onOpenChange={setDialogOpen} food={dialogFood} />
+      <CompositeFoodDialog
+        open={compositeOpen}
+        onOpenChange={setCompositeOpen}
+        food={compositeFood}
+        foods={foods}
+        components={components}
+      />
       <ConfirmFoodDialog
         target={confirmTarget}
         onOpenChange={(open) => {

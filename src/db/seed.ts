@@ -3,12 +3,14 @@ import { db, pool } from "@/db/client";
 import {
   diaryEntries,
   exercises,
+  foodComponents,
   foods,
   settings,
   treadmillSessions,
   workoutSets,
   workouts,
 } from "@/db/schema";
+import { compositeNutrition } from "@/lib/composite";
 
 // Resets the tables and inserts mock records, then checks the relations.
 // Safe to run repeatedly: the transaction truncates and restarts identities.
@@ -46,6 +48,15 @@ const foodSeed = [
   { name: "Chleb żytni", kcal: 259, proteinG: 8.5, carbsG: 48.3, fatG: 3.3 },
 ] as const;
 
+const dishSeed = {
+  name: "Curry z ryżem",
+  finalWeightG: null,
+  components: [
+    { food: "Sos curry", grams: 150 },
+    { food: "Ryż gotowany", grams: 200 },
+  ],
+} as const;
+
 // Day offsets are relative to today (-2 = two days ago).
 type MealName = "breakfast" | "lunch" | "dinner" | "snack" | "other";
 const diarySeed: { offset: number; meal: MealName; food: string; grams: number }[] = [
@@ -73,7 +84,7 @@ async function main() {
 
     await db.transaction(async (tx) => {
       await tx.execute(
-        sql`TRUNCATE settings, foods, diary_entries, workouts, treadmill_sessions, exercises, workout_sets RESTART IDENTITY CASCADE`,
+        sql`TRUNCATE settings, food_components, foods, diary_entries, workouts, treadmill_sessions, exercises, workout_sets RESTART IDENTITY CASCADE`,
       );
 
       await tx.insert(settings).values({
@@ -89,6 +100,39 @@ async function main() {
 
       const insertedFoods = await tx.insert(foods).values([...foodSeed]).returning();
       const foodByName = new Map(insertedFoods.map((f) => [f.name, f]));
+
+      const dishComponents = dishSeed.components.map((component) => {
+        const food = foodByName.get(component.food);
+        if (!food) throw new Error(`Seed food missing: ${component.food}`);
+        return { food, quantityG: component.grams };
+      });
+      const dishNutrition = compositeNutrition(
+        dishComponents.map((c) => ({
+          kcal: c.food.kcal,
+          proteinG: c.food.proteinG,
+          carbsG: c.food.carbsG,
+          fatG: c.food.fatG,
+          quantityG: c.quantityG,
+        })),
+        dishSeed.finalWeightG,
+      );
+      const [dish] = await tx
+        .insert(foods)
+        .values({
+          name: dishSeed.name,
+          isComposite: true,
+          finalWeightG: dishSeed.finalWeightG,
+          ...dishNutrition,
+        })
+        .returning();
+      if (!dish) throw new Error("Seed dish missing");
+      await tx.insert(foodComponents).values(
+        dishComponents.map((c) => ({
+          foodId: dish.id,
+          componentFoodId: c.food.id,
+          quantityG: c.quantityG,
+        })),
+      );
 
       const entryRows = diarySeed.map((entry) => {
         const food = foodByName.get(entry.food);
@@ -177,6 +221,25 @@ async function main() {
 
     const oats = await db.query.foods.findFirst({ where: (f, { eq }) => eq(f.name, "Płatki owsiane") });
     expect("diacritics kept in food name", oats?.name, "Płatki owsiane");
+
+    const dishFood = await db.query.foods.findFirst({
+      where: (f, { eq }) => eq(f.name, "Curry z ryżem"),
+      with: { components: { with: { component: true } } },
+    });
+    expect("dish is composite", dishFood?.isComposite, true);
+    expect("dish component count", dishFood?.components.length, 2);
+    expect("dish kcal per 100 g", dishFood?.kcal, 121.43);
+    expect(
+      "dish components are plain foods",
+      dishFood?.components.every((c) => c.component.isComposite === false) ?? false,
+      true,
+    );
+
+    const riceWithDishes = await db.query.foods.findFirst({
+      where: (f, { eq }) => eq(f.name, "Ryż gotowany"),
+      with: { usedIn: true },
+    });
+    expect("rice used in one dish", riceWithDishes?.usedIn.length, 1);
     const squatExercise = await db.query.exercises.findFirst({
       where: (e, { eq }) => eq(e.name, "Przysiad ze sztangą"),
     });

@@ -19,11 +19,16 @@ Let the user build a food ("dish") out of other foods, e.g. Curry z ryżem from 
 ## Implementation Progress
 | # | Subtask | File | Status |
 |---|---|---|---|
-| 1 | Pure logic: dish nutrition, cycle check, recompute order, dish form validation (with tests) | [subtask-1.md](subtask-1.md) | Planned |
-| 2 | Schema: `isComposite`, `finalWeightG`, `food_components`, migration and seed | [subtask-2.md](subtask-2.md) | Planned |
-| 3 | Server side: DAL, dish services with recalculation, Server Actions | [subtask-3.md](subtask-3.md) | Planned |
-| 4 | PL/EN message keys and the dish dialog | [subtask-4.md](subtask-4.md) | Planned |
-| 5 | Foods view and table integration, docs | [subtask-5.md](subtask-5.md) | Planned |
+| 1 | Pure logic: dish nutrition, cycle check, recompute order, dish form validation (with tests) | [subtask-1.md](subtask-1.md) | Done |
+| 2 | Schema: `isComposite`, `finalWeightG`, `food_components`, migration and seed | [subtask-2.md](subtask-2.md) | Done |
+| 3 | Server side: DAL, dish services with recalculation, Server Actions | [subtask-3.md](subtask-3.md) | Done |
+| 4 | PL/EN message keys and the dish dialog | [subtask-4.md](subtask-4.md) | Done |
+| 5 | Foods view and table integration, docs | [subtask-5.md](subtask-5.md) | Done |
 
 ## Change Log
 <!-- Filled by /plan-realize: one bullet per finished subtask, "- <n>. <change>". Used to build commit-message.txt after the last subtask. -->
+- 1. Add pure composite helpers (`compositeNutrition`, `totalQuantity`, `wouldCreateCycle`, `dependentsInOrder`) and `parseCompositeFoodForm` with Vitest cases, and list them in `src/lib/CLAUDE.md`
+- 2. Add `isComposite` and `finalWeightG` columns to `foods`, the `food_components` table with its relations, migration `0001_cheerful_warpath.sql`, and the dish "Curry z ryżem" seed with checks
+- 3. Add `createCompositeFood` and `updateCompositeFood` with transactional recalculation of dependent dishes (`recomputeDependents`), guard `updateFood` against dishes, block deleting ingredients (`usedInComposite`), add `listFoodComponents`, `saveCompositeFood` action, and the `foodInComposite` message keys
+- 4. Add `foods.composite`, `actions.addComposite`/`removeComponent`/`showComponents`/`hideComponents`, `compositeBadge`, `toast.dishCreated`/`dishUpdated` and the dish error keys to PL/EN, and create `CompositeFoodDialog` (name, ingredient search and rows, optional final weight, live per-100 g preview)
+- 5. Load `listFoodComponents` in `FoodsSection`, add the "Add dish" button and `CompositeFoodDialog` to `FoodsView` (dishes open the dish dialog), show a "Dish" badge and expandable ingredient rows in `FoodsTable`, report `foodInComposite` in `ConfirmFoodDialog`, and document composite foods in `CLAUDE_ARCHITECTURE.md` and `src/features/CLAUDE.md`

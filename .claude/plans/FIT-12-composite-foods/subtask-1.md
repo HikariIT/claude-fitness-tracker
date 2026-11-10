@@ -126,3 +126,7 @@ Under **Files**, add two bullets after `validation/foods.ts`:
 **Read:** `src/lib/numbers.ts`, `src/lib/validation/foods.ts` (exports `FOOD_NAME_MAX`, `parseFoodId`, and the name rules in `parseFoodForm`), `src/lib/validation/foods.test.ts` (test style), `src/lib/CLAUDE.md`
 
 **Verify:** `npx tsc --noEmit && npm run lint && npm test -- src/lib`
+
+**Status:** Done
+
+**Notes:** The plan's expected carbs value for the Sos curry + Ryż example was wrong: 70.65 g / 350 g × 100 = 20.19, not 20.17. The test uses 20.19. Lint reports 0 errors (the warnings are in `.claude/skills/impeccable/scripts`, not in `src/`).

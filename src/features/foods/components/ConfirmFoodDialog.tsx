@@ -42,6 +42,9 @@ export function ConfirmFoodDialog({ target, onOpenChange }: ConfirmFoodDialogPro
       } else if (result.fieldErrors?.name === "foodInUse") {
         toast.error(t("toast.inUse", { name: food.name }));
         onOpenChange(false);
+      } else if (result.fieldErrors?.name === "foodInComposite") {
+        toast.error(t("toast.inComposite", { name: food.name }));
+        onOpenChange(false);
       } else {
         toast.error(t("toast.failed"));
       }

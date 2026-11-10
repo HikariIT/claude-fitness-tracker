@@ -123,6 +123,23 @@
     },
     "showArchived": "Pokaż usunięte produkty",
     "archivedBadge": "Usunięty",
+    "compositeBadge": "Danie",
+    "composite": {
+      "addTitle": "Dodaj danie",
+      "editTitle": "Edytuj danie",
+      "description": "Danie z innych produktów. Wartości na 100 g są liczone ze składników.",
+      "components": "Składniki",
+      "searchLabel": "Dodaj składnik",
+      "searchPlaceholder": "Szukaj produktów…",
+      "noMatches": "Brak pasujących produktów.",
+      "quantity": "Ilość: {name}",
+      "emptyComponents": "Brak składników. Wyszukaj produkt powyżej, aby go dodać.",
+      "totalWeight": "Waga składników: {grams} g",
+      "finalWeightG": "Waga po ugotowaniu (opcjonalnie)",
+      "finalWeightHint": "Zostaw puste, aby użyć wagi składników.",
+      "preview": "Na 100 g: {kcal} kcal · białko {proteinG} g · węglowodany {carbsG} g · tłuszcz {fatG} g",
+      "editHint": "Dania, które zawierają to danie, zostaną przeliczone. Zapisane dni zachowują swoje wartości."
+    },
     "empty": {
       "title": "Brak produktów",
       "description": "Dodaj pierwszy produkt, aby planować posiłki."
@@ -136,7 +153,11 @@
       "delete": "Usuń na stałe",
       "save": "Zapisz",
       "saving": "Zapisywanie…",
-      "cancel": "Anuluj"
+      "cancel": "Anuluj",
+      "addComposite": "Dodaj danie",
+      "removeComponent": "Usuń składnik",
+      "showComponents": "Pokaż składniki: {name}",
+      "hideComponents": "Ukryj składniki: {name}"
     },
     "dialog": {
       "addTitle": "Dodaj produkt",
@@ -163,11 +184,14 @@
     "toast": {
       "created": "Dodano produkt",
       "updated": "Zapisano produkt",
+      "dishCreated": "Danie dodane",
+      "dishUpdated": "Danie zapisane",
       "archived": "Usunięto produkt",
       "restored": "Przywrócono produkt",
       "nameTaken": "Produkt o nazwie „{name}” już istnieje.",
       "deleted": "Usunięto produkt na stałe",
       "inUse": "„{name}” występuje w zapisanych posiłkach, więc nie można go usunąć na stałe. Pozostaje ukryty na liście.",
+      "inComposite": "„{name}” jest składnikiem dania, więc nie można go usunąć. Pozostaje usunięty z listy.",
       "failed": "Coś poszło nie tak. Spróbuj ponownie."
     },
     "errors": {
@@ -179,7 +203,16 @@
       "carbsRange": "Podaj węglowodany od 0 do 100 g.",
       "fatRange": "Podaj tłuszcz od 0 do 100 g.",
       "macrosSum": "Białko, węglowodany i tłuszcz razem nie mogą przekroczyć 100 g.",
-      "foodInUse": "Ten produkt występuje w zapisanych posiłkach i nie można go usunąć."
+      "foodInUse": "Ten produkt występuje w zapisanych posiłkach i nie można go usunąć.",
+      "foodInComposite": "Ten produkt jest składnikiem dania i nie można go usunąć.",
+      "componentsRequired": "Dodaj co najmniej jeden składnik.",
+      "componentsTooMany": "Użyj najwyżej 30 składników.",
+      "componentDuplicate": "Każdy produkt można dodać tylko raz.",
+      "componentQuantityRange": "Podaj ilość od 0,1 do 5000 g.",
+      "componentUnavailable": "Jeden ze składników jest niedostępny. Usuń go i spróbuj ponownie.",
+      "componentCycle": "Danie nie może zawierać samego siebie, ani bezpośrednio, ani przez inne danie.",
+      "finalWeightRange": "Podaj wagę od 1 do 20000 g.",
+      "finalWeightTooLow": "Waga końcowa jest za mała dla tych składników."
     }
   },
   "common": {

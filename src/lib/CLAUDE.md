@@ -9,6 +9,8 @@ Isomorphic helpers with no side effects. Tests sit next to the code (`*.test.ts`
 - `nutrition.ts`: `SEXES`, `ACTIVITY_LEVELS`, `ACTIVITY_MULTIPLIERS` (D5), `ageOn`, `calcBmr` (Mifflin-St Jeor, D1), `calcTdee`, `kcalFromMacros` (4/4/9).
 - `validation/profile.ts`: `parseProfileForm(formData, today)` returns `{ ok, data }` or `{ ok: false, fieldErrors }`. Errors are stable codes (`PROFILE_ERROR_CODES`, e.g. `heightRange`), never strings (D7).
 - `validation/foods.ts`: `parseFoodForm`, `parseFoodId`, `FOOD_ERROR_CODES`. The `macros` pseudo-field carries the `macrosSum` error (protein + carbs + fat ≤ 100 g).
+- `composite.ts`: `compositeNutrition` (per-100 g from ingredient grams and an optional final weight), `totalQuantity`, `wouldCreateCycle`, `dependentsInOrder` (recalculation order). No imports, so `src/db/seed.ts` can use it.
+- `validation/composite-foods.ts`: `parseCompositeFoodForm` (fields `name`, `finalWeightG`, repeated `componentFoodId`/`componentQuantityG`), `COMPOSITE_FOOD_ERROR_CODES`. Row errors use the key `component.<index>`.
 - `utils.ts`: `cn()` (class merging).
 
 **Rules:**

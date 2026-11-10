@@ -9,8 +9,9 @@ Every file starts with `import "server-only"`. Only `server/` and `db/` touch th
 - `services/`: writes used by actions. Example: `services/settings.ts` exports `saveSettings(input)`, an upsert of row `id = 1`.
   - Multi-table writes run in a transaction (`db.transaction`).
   - Services enforce cross-table rules that the DB does not, such as treadmill-only sessions.
-  - `services/foods.ts`: `createFood`, `updateFood`, `archiveFood`, `restoreFood`, `deleteFood` return `{ ok } | { ok: false, reason: "nameTaken" | "notFound" | "inUse" }`. Names are unique among non-archived foods, ignoring case (D6, D9). `deleteFood` hard-deletes only an archived food that no diary entry references (`inUse` otherwise).
-  - `dal/foods.ts`: `listFoods()` returns archived rows too. The UI filters them.
+  - `services/foods.ts`: `createFood`, `updateFood`, `archiveFood`, `restoreFood`, `deleteFood` return `{ ok } | { ok: false, reason: "nameTaken" | "notFound" | "inUse" | "usedInComposite" }` (`usedInComposite` only from `deleteFood`). Names are unique among non-archived foods, ignoring case (D6, D9). `deleteFood` hard-deletes only an archived food that no diary entry references (`inUse` otherwise) and that is not an ingredient of a dish (`usedInComposite`, D5).
+  - `services/foods.ts` dishes: `createCompositeFood` / `updateCompositeFood` return `{ ok, food } | { ok: false, reason: "nameTaken" | "notFound" | "componentUnavailable" | "componentCycle" | "finalWeightTooLow" }`. Both run in a transaction and compute per-100 g values with `compositeNutrition`. `updateFood` and `updateCompositeFood` call `recomputeDependents` in the same transaction, so every dish that uses the food is recalculated (D4). `updateFood` refuses dishes (`notFound`, D8).
+  - `dal/foods.ts`: `listFoods()` returns archived rows too. The UI filters them. `listFoodComponents()` returns every dish ingredient row (tag `foods`), ordered by `foodId`, `id`.
 
 **Cache tags:**
 - `settings`: the singleton settings row.

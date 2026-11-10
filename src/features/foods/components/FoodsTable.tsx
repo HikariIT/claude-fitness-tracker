@@ -1,8 +1,9 @@
 "use client";
 
+import { Fragment, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
-import { Pencil, RotateCcw, Trash2 } from "lucide-react";
-import type { Food } from "@/server/dal/foods";
+import { ChevronDown, ChevronRight, Pencil, RotateCcw, Trash2 } from "lucide-react";
+import type { Food, FoodComponent } from "@/server/dal/foods";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,8 @@ import {
 
 type FoodsTableProps = {
   foods: Food[]; // already filtered and sorted
+  componentsByFood: ReadonlyMap<number, FoodComponent[]>; // dish id -> ingredient rows
+  foodsById: ReadonlyMap<number, Food>; // all foods, for ingredient names and archived state
   pendingId: number | null; // disables that row's buttons
   onEdit: (food: Food) => void;
   onArchive: (food: Food) => void;
@@ -36,6 +39,8 @@ const actionClass = "h-7 text-steel-blue-300 hover:bg-icy-blue-800 hover:text-pr
 
 export function FoodsTable({
   foods,
+  componentsByFood,
+  foodsById,
   pendingId,
   onEdit,
   onArchive,
@@ -45,6 +50,15 @@ export function FoodsTable({
   const t = useTranslations("foods");
   const format = useFormatter();
   const num = (value: number) => format.number(value, { maximumFractionDigits: 1 });
+  const [expanded, setExpanded] = useState<Set<number>>(() => new Set());
+
+  const toggleExpanded = (id: number) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   return (
     <Table className="text-base">
@@ -72,74 +86,120 @@ export function FoodsTable({
         {foods.map((food) => {
           const archived = food.archivedAt !== null;
           const busy = pendingId === food.id;
+          const isOpen = expanded.has(food.id);
+          const Chevron = isOpen ? ChevronDown : ChevronRight;
+          const components = food.isComposite ? (componentsByFood.get(food.id) ?? []) : [];
           return (
-            <TableRow key={food.id} className={rowClass}>
-              <TableCell
-                className={`${cellClass} ${archived ? "text-muted-foreground" : "font-semibold text-primary"}`}
-              >
-                <span className="inline-flex items-center gap-2">
-                  {food.name}
+            <Fragment key={food.id}>
+              <TableRow className={rowClass}>
+                <TableCell
+                  className={`${cellClass} ${archived ? "text-muted-foreground" : "font-semibold text-primary"}`}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    {food.isComposite ? (
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 text-left"
+                        aria-expanded={isOpen}
+                        aria-label={t(isOpen ? "actions.hideComponents" : "actions.showComponents", {
+                          name: food.name,
+                        })}
+                        onClick={() => toggleExpanded(food.id)}
+                      >
+                        <Chevron aria-hidden="true" className="size-4 shrink-0" />
+                        {food.name}
+                      </button>
+                    ) : (
+                      food.name
+                    )}
+                    {food.isComposite ? <Badge variant="secondary">{t("compositeBadge")}</Badge> : null}
+                    {archived ? (
+                      <Badge variant="outline" className="bg-white">
+                        {t("archivedBadge")}
+                      </Badge>
+                    ) : null}
+                  </span>
+                </TableCell>
+                <TableCell className={numClass}>{num(food.kcal)}</TableCell>
+                <TableCell className={numClass}>{num(food.proteinG)}</TableCell>
+                <TableCell className={numClass}>{num(food.carbsG)}</TableCell>
+                <TableCell className={numClass}>{num(food.fatG)}</TableCell>
+                <TableCell className={`${cellClass} text-right`}>
                   {archived ? (
-                    <Badge variant="outline" className="bg-white">
-                      {t("archivedBadge")}
-                    </Badge>
-                  ) : null}
-                </span>
-              </TableCell>
-              <TableCell className={numClass}>{num(food.kcal)}</TableCell>
-              <TableCell className={numClass}>{num(food.proteinG)}</TableCell>
-              <TableCell className={numClass}>{num(food.carbsG)}</TableCell>
-              <TableCell className={numClass}>{num(food.fatG)}</TableCell>
-              <TableCell className={`${cellClass} text-right`}>
-                {archived ? (
-                  <span className="inline-flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={actionClass}
-                      disabled={busy}
-                      onClick={() => onRestore(food)}
-                    >
-                      <RotateCcw aria-hidden="true" />
-                      {t("actions.restore")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={`${actionClass} text-destructive hover:bg-destructive/10 hover:text-destructive`}
-                      disabled={busy}
-                      onClick={() => onDelete(food)}
-                    >
-                      <Trash2 aria-hidden="true" />
-                      {t("actions.delete")}
-                    </Button>
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={actionClass}
-                      disabled={busy}
-                      onClick={() => onEdit(food)}
-                    >
-                      <Pencil aria-hidden="true" />
-                      {t("actions.edit")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={actionClass}
-                      disabled={busy}
-                      onClick={() => onArchive(food)}
-                    >
-                      <Trash2 aria-hidden="true" />
-                      {t("actions.archive")}
-                    </Button>
-                  </span>
-                )}
-              </TableCell>
-            </TableRow>
+                    <span className="inline-flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={actionClass}
+                        disabled={busy}
+                        onClick={() => onRestore(food)}
+                      >
+                        <RotateCcw aria-hidden="true" />
+                        {t("actions.restore")}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`${actionClass} text-destructive hover:bg-destructive/10 hover:text-destructive`}
+                        disabled={busy}
+                        onClick={() => onDelete(food)}
+                      >
+                        <Trash2 aria-hidden="true" />
+                        {t("actions.delete")}
+                      </Button>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={actionClass}
+                        disabled={busy}
+                        onClick={() => onEdit(food)}
+                      >
+                        <Pencil aria-hidden="true" />
+                        {t("actions.edit")}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={actionClass}
+                        disabled={busy}
+                        onClick={() => onArchive(food)}
+                      >
+                        <Trash2 aria-hidden="true" />
+                        {t("actions.archive")}
+                      </Button>
+                    </span>
+                  )}
+                </TableCell>
+              </TableRow>
+              {isOpen
+                ? components.map((c) => {
+                    const ingredient = foodsById.get(c.componentFoodId);
+                    const ingredientArchived = ingredient?.archivedAt != null;
+                    return (
+                      <TableRow key={c.id} className={rowClass}>
+                        <TableCell className={`${cellClass} pl-8 text-muted-foreground`}>
+                          <span className="inline-flex items-center gap-2">
+                            {`${ingredient?.name ?? "—"} · ${num(c.quantityG)} ${t("units.g")}`}
+                            {ingredientArchived ? (
+                              <Badge variant="outline" className="bg-white">
+                                {t("archivedBadge")}
+                              </Badge>
+                            ) : null}
+                          </span>
+                        </TableCell>
+                        <TableCell className={numClass} />
+                        <TableCell className={numClass} />
+                        <TableCell className={numClass} />
+                        <TableCell className={numClass} />
+                        <TableCell className={cellClass} />
+                      </TableRow>
+                    );
+                  })
+                : null}
+            </Fragment>
           );
         })}
       </TableBody>

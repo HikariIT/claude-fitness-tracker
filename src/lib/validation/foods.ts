@@ -15,6 +15,7 @@ export const FOOD_ERROR_CODES = [
   "fatRange",
   "macrosSum",
   "foodInUse",
+  "foodInComposite",
 ] as const;
 export type FoodErrorCode = (typeof FOOD_ERROR_CODES)[number];
 

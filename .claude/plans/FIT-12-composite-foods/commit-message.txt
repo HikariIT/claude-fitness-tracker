@@ -1,0 +1,7 @@
+[FIT-12]: Support Composite Foods Built from Other Foods
+
+- Add pure composite helpers (`compositeNutrition`, `totalQuantity`, `wouldCreateCycle`, `dependentsInOrder`) and `parseCompositeFoodForm` with Vitest cases, and list them in `src/lib/CLAUDE.md`
+- Add `isComposite` and `finalWeightG` columns to `foods`, the `food_components` table with its relations, migration `0001_cheerful_warpath.sql`, and the dish "Curry z ryżem" seed with checks
+- Add `createCompositeFood` and `updateCompositeFood` with transactional recalculation of dependent dishes (`recomputeDependents`), guard `updateFood` against dishes, block deleting ingredients (`usedInComposite`), add `listFoodComponents`, `saveCompositeFood` action, and the `foodInComposite` message keys
+- Add `foods.composite`, `actions.addComposite`/`removeComponent`/`showComponents`/`hideComponents`, `compositeBadge`, `toast.dishCreated`/`dishUpdated` and the dish error keys to PL/EN, and create `CompositeFoodDialog` (name, ingredient search and rows, optional final weight, live per-100 g preview)
+- Load `listFoodComponents` in `FoodsSection`, add the "Add dish" button and `CompositeFoodDialog` to `FoodsView` (dishes open the dish dialog), show a "Dish" badge and expandable ingredient rows in `FoodsTable`, report `foodInComposite` in `ConfirmFoodDialog`, and document composite foods in `CLAUDE_ARCHITECTURE.md` and `src/features/CLAUDE.md`

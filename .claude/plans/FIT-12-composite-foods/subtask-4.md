@@ -79,3 +79,5 @@ This subtask does not wire the dialog into the view (subtask 5 does).
 **Read:** `src/features/foods/components/FoodFormDialog.tsx`, `src/components/forms/FormField.tsx`, `src/components/forms/NumberInput.tsx`, `src/features/foods/actions.ts` (exports), `src/server/dal/foods.ts`, `src/lib/composite.ts` (exports), `src/lib/validation/composite-foods.ts` (exports), `src/lib/search.ts` (exports), `src/messages/en.json` (`foods` section), `src/messages/pl.json` (`foods` section)
 
 **Verify:** `npx tsc --noEmit && npm run lint && npm test -- src/messages`
+
+**Notes:** The ingredient search input has an Enter key guard so Enter does not submit the dish form. Preview and total count only rows whose grams parse and whose food is known.

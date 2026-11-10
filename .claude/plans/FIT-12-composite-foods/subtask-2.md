@@ -1,6 +1,8 @@
 # 2. Schema: `isComposite`, `finalWeightG`, `food_components`, migration and seed
 **Decisions:** D1, D2, D5, D8, D10
 
+**Notes:** The plain `docker compose up -d db` does not publish port 5432 (only `docker-compose.dev.yml` does). Use `docker compose -f docker-compose.dev.yml up -d db` for `db:migrate` and `db:seed` from the host.
+
 Goal: store dishes. A dish is a normal `foods` row with a flag, and its ingredients live in a new table. Schema files use **relative imports only** (drizzle-kit loads them directly, so no `@/` and no `server-only`).
 
 ## 1. `src/db/schema/foods.ts` (modify)

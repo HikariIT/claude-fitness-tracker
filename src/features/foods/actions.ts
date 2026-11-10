@@ -8,15 +8,24 @@ import {
   type FoodErrorCode,
 } from "@/lib/validation/foods";
 import {
+  parseCompositeFoodForm,
+  type CompositeFoodErrorCode,
+} from "@/lib/validation/composite-foods";
+import {
   archiveFood,
+  createCompositeFood,
   createFood,
   deleteFood,
   restoreFood,
+  updateCompositeFood,
   updateFood,
 } from "@/server/services/foods";
 
 export type FoodFormState =
   | ActionResult<{ savedAt: number; mode: "created" | "updated" }, FoodErrorCode>
+  | null;
+export type CompositeFoodFormState =
+  | ActionResult<{ savedAt: number; mode: "created" | "updated" }, CompositeFoodErrorCode>
   | null;
 export type FoodRowActionResult = ActionResult<null, FoodErrorCode>;
 
@@ -56,6 +65,61 @@ export async function saveFood(
   return { ok: true, data: { savedAt: Date.now(), mode } };
 }
 
+/** useActionState action for the dish dialog. Hidden field "id": empty → create, else update. */
+export async function saveCompositeFood(
+  _prev: CompositeFoodFormState,
+  formData: FormData,
+): Promise<CompositeFoodFormState> {
+  const rawId = formData.get("id");
+  let id: number | null = null;
+  if (typeof rawId === "string" && rawId !== "") {
+    id = parseFoodId(rawId);
+    if (id === null) return { ok: false, code: "unexpected" };
+  }
+
+  const parsed = parseCompositeFoodForm(formData);
+  if (!parsed.ok) {
+    return { ok: false, code: "validation", fieldErrors: parsed.fieldErrors };
+  }
+
+  const mode = id === null ? "created" : "updated";
+  try {
+    const result =
+      id === null
+        ? await createCompositeFood(parsed.data)
+        : await updateCompositeFood(id, parsed.data);
+    if (!result.ok) {
+      if (result.reason === "nameTaken") {
+        return { ok: false, code: "validation", fieldErrors: { name: "nameTaken" } };
+      }
+      if (result.reason === "componentUnavailable") {
+        return {
+          ok: false,
+          code: "validation",
+          fieldErrors: { components: "componentUnavailable" },
+        };
+      }
+      if (result.reason === "componentCycle") {
+        return { ok: false, code: "validation", fieldErrors: { components: "componentCycle" } };
+      }
+      if (result.reason === "finalWeightTooLow") {
+        return {
+          ok: false,
+          code: "validation",
+          fieldErrors: { finalWeightG: "finalWeightTooLow" },
+        };
+      }
+      return { ok: false, code: "unexpected" };
+    }
+  } catch (error) {
+    console.error("saveCompositeFood failed", error);
+    return { ok: false, code: "unexpected" };
+  }
+
+  updateTag("foods");
+  return { ok: true, data: { savedAt: Date.now(), mode } };
+}
+
 /** Called directly from the list (not a form). */
 export async function archiveFoodAction(id: number): Promise<FoodRowActionResult> {
   return runToggle(id, archiveFood, "archiveFoodAction failed");
@@ -86,6 +150,9 @@ async function runToggle(
       }
       if (result.reason === "inUse") {
         return { ok: false, code: "validation", fieldErrors: { name: "foodInUse" } };
+      }
+      if (result.reason === "usedInComposite") {
+        return { ok: false, code: "validation", fieldErrors: { name: "foodInComposite" } };
       }
       return { ok: false, code: "unexpected" };
     }

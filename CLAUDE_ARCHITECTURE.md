@@ -110,7 +110,7 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 ## Setup steps
 1. Move `app/` to `src/app`, and change the tsconfig paths entry `@/*` to `./src/*`.
 2. Add deps: `drizzle-orm pg zod drizzle-zod server-only`; dev: `drizzle-kit @types/pg vitest`.
-3. Add the Postgres service to the compose files, and add `DATABASE_URL` to `.env.local`/`.env.production`.
+3. Add the Postgres service to the compose files, and add `DATABASE_URL` to `.env.local`/`.env.production`. (done: FIT-6, plus npm run db:check)
 4. Run `shadcn init` (Tailwind 4) and add the primitives.
 5. Write the schema, generate the first migration, and seed.
 6. Build foods, then settings, then the diary. Workouts come in phase 2.

@@ -2,13 +2,22 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+1. Create the env files from the template:
 
-```bash
-npm run dev
-```
+   ```bash
+   cp .env.example .env.local        # dev (host-side DATABASE_URL uses localhost)
+   cp .env.example .env.production   # prod: change DATABASE_URL host to "db"
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Start the dev stack (web app + PostgreSQL 17):
+
+   ```bash
+   docker compose -f docker-compose.dev.yml up
+   ```
+
+3. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. PostgreSQL is published on `localhost:5432` (user `postgres`, password `postgres`, database `fitness_tracker`).
+
+To run the app without Docker, start PostgreSQL yourself, then run `npm run dev`.
 
 You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
 

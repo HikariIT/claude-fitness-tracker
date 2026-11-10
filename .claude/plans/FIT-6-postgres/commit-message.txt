@@ -1,0 +1,4 @@
+[FIT-6]: Add PostgreSQL Service to Docker Compose and Connect to Database
+
+- Add postgres:17 db service to both compose files, committed .env.example, and README setup steps
+- Add server-only Drizzle client, db:check script (tsx, SELECT 1), and src/db/AGENTS.md

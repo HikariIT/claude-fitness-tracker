@@ -1,0 +1,4 @@
+[FIT-5]: Restructure Project to src/ Layout and Install Dependencies
+
+- Move app/ to src/app (git mv), point the @/* alias at ./src/* and update the README path
+- Install drizzle-orm 0.45.4, pg 8.23.1, zod 4.6.7, drizzle-zod 0.8.3, server-only 0.0.1 and dev drizzle-kit 0.31.11, @types/pg 8.23.1, vitest 4.1.12; add vitest.config.mts with the @/ alias and the test script

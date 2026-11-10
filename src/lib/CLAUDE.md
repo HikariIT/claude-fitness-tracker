@@ -4,8 +4,11 @@ Isomorphic helpers with no side effects. Tests sit next to the code (`*.test.ts`
 
 **Files:**
 - `dates.ts`: ISO date helpers (`isIsoDate`, `isoToUtcDate`, `addDays`). Local day strings, no timezone drift.
-- `nutrition.ts`: `SEXES`, `ACTIVITY_LEVELS`, `ACTIVITY_MULTIPLIERS` (D5), `ageOn`, `calcBmr` (Mifflin-St Jeor, D1), `calcTdee`.
+- `numbers.ts`: `parseDecimal` (comma or dot decimal separator), shared by validators.
+- `search.ts`: `normalizeForSearch`, `matchesQuery`. Case- and diacritics-insensitive, `ł` → `l`.
+- `nutrition.ts`: `SEXES`, `ACTIVITY_LEVELS`, `ACTIVITY_MULTIPLIERS` (D5), `ageOn`, `calcBmr` (Mifflin-St Jeor, D1), `calcTdee`, `kcalFromMacros` (4/4/9).
 - `validation/profile.ts`: `parseProfileForm(formData, today)` returns `{ ok, data }` or `{ ok: false, fieldErrors }`. Errors are stable codes (`PROFILE_ERROR_CODES`, e.g. `heightRange`), never strings (D7).
+- `validation/foods.ts`: `parseFoodForm`, `parseFoodId`, `FOOD_ERROR_CODES`. The `macros` pseudo-field carries the `macrosSum` error (protein + carbs + fat ≤ 100 g).
 - `utils.ts`: `cn()` (class merging).
 
 **Rules:**

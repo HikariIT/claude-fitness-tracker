@@ -35,3 +35,8 @@ export function calcBmr(input: { sex: Sex; weightKg: number; heightCm: number; a
 export function calcTdee(bmr: number, level: ActivityLevel): number {
   return bmr * ACTIVITY_MULTIPLIERS[level];
 }
+
+/** Atwater estimate: 4 kcal/g protein, 4 kcal/g carbs, 9 kcal/g fat, rounded to a whole kcal (D8). */
+export function kcalFromMacros(m: { proteinG: number; carbsG: number; fatG: number }): number {
+  return Math.round(4 * m.proteinG + 4 * m.carbsG + 9 * m.fatG);
+}

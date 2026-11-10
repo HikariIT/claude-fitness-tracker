@@ -1,0 +1,7 @@
+[FIT-11]: Food Database View (CRUD for Foods and Nutritional Values)
+
+- Add shared `parseDecimal` (`src/lib/numbers.ts`), `normalizeForSearch`/`matchesQuery` (`src/lib/search.ts`), `kcalFromMacros`, and `parseFoodForm`/`parseFoodId` (`src/lib/validation/foods.ts`), with Vitest cases; profile validator now imports `parseDecimal`.
+- Add foods DAL `listFoods` (`src/server/dal/foods.ts`), foods services `createFood`/`updateFood`/`archiveFood`/`restoreFood` with name-uniqueness checks in transactions (`src/server/services/foods.ts`), and Server Actions `saveFood`/`archiveFoodAction`/`restoreFoodAction` (`src/features/foods/actions.ts`).
+- Add `foods` message keys to `en.json` and `pl.json`, and the add/edit `FoodFormDialog` (`src/features/foods/components/FoodFormDialog.tsx`) with live kcal-from-macros hint and inline validation errors.
+- Add `/foods` list view: `FoodsSection` (server, reads `listFoods`), `FoodsView` (client search, show-removed toggle, sorted with Polish collator), `FoodsTable` (kcal and macros per 100 g, Edit/Remove or Restore), `ArchiveFoodDialog` (confirm archive), and replace the `/foods` placeholder page.
+- Update navigator docs (`src/features/CLAUDE.md`, `src/server/CLAUDE.md`, `src/lib/CLAUDE.md`, `src/app/CLAUDE.md`) and `CLAUDE_ARCHITECTURE.md` for the foods view, its DAL/services, cache tag `foods`, and the new lib files.

@@ -16,7 +16,7 @@ Drizzle table definitions for PostgreSQL. Data model: `CLAUDE_ARCHITECTURE.md` (
 - TS names are camelCase. Column names in SQL are snake_case, from `casing`.
 - Every table has an integer identity `id` (except `settings`) and `...timestamps`.
 - Nutrition and measurement columns are `numeric` with `mode: "number"`.
-- Foods and exercises are archived (`archivedAt`), never deleted.
+- Foods and exercises are archived (`archivedAt`). An archived food may be hard-deleted only when no diary entry references it (FK `restrict`).
 - Diary entries store kcal and macro snapshots, computed when the entry is written.
 - Treadmill and training rules (which workout type has a session or sets) are enforced in services, not the DB.
 

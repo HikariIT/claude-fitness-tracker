@@ -5,6 +5,7 @@ import {
   ageOn,
   calcBmr,
   calcTdee,
+  kcalFromMacros,
 } from "./nutrition";
 
 describe("ageOn", () => {
@@ -50,5 +51,19 @@ describe("calcTdee", () => {
     for (let i = 1; i < values.length; i++) {
       expect(values[i]).toBeGreaterThan(values[i - 1]);
     }
+  });
+});
+
+describe("kcalFromMacros", () => {
+  it("applies 4/4/9 kcal per gram", () => {
+    expect(kcalFromMacros({ proteinG: 2.7, carbsG: 28.2, fatG: 0.3 })).toBe(126);
+  });
+
+  it("returns zero for zero macros", () => {
+    expect(kcalFromMacros({ proteinG: 0, carbsG: 0, fatG: 0 })).toBe(0);
+  });
+
+  it("returns 900 for 100 g of fat", () => {
+    expect(kcalFromMacros({ proteinG: 0, carbsG: 0, fatG: 100 })).toBe(900);
   });
 });

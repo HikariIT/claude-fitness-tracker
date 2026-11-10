@@ -29,7 +29,7 @@ fitness-tracker/
    │  │  ├─ layout.tsx          # Root layout: html lang, fonts, NextIntlClientProvider, AppNav, Toaster
    │  │  ├─ page.tsx            # Redirects to /planner
    │  │  ├─ profile/page.tsx    # Personal data (placeholder)
-   │  │  ├─ foods/page.tsx      # Food database (placeholder)
+   │  │  ├─ foods/page.tsx      # Food database (exists: FoodsSection in Suspense)
    │  │  ├─ planner/page.tsx    # Food planner (placeholder)
    │  │  ├─ workouts/page.tsx   # Workout planner (placeholder)
    │  │  ├─ balance/page.tsx    # Total balance (placeholder)
@@ -41,8 +41,8 @@ fitness-tracker/
    │  │  ├─ components/         # MealSection, EntryRow, AddEntryDialog, DayTotals
    │  │  └─ actions.ts          # "use server": addEntry, updateEntry, deleteEntry
    │  ├─ foods/
-   │  │  ├─ components/         # FoodForm, FoodTable, FoodPicker
-   │  │  └─ actions.ts          # createFood, updateFood, archiveFood
+   │  │  ├─ components/         # FoodsView, FoodsTable, FoodFormDialog, ConfirmFoodDialog (exists: FoodsSection too)
+   │  │  └─ actions.ts          # saveFood, archiveFoodAction, restoreFoodAction, deleteFoodAction (exists)
    │  ├─ profile/               # Personal data form + actions.ts (was settings/) (exists: ProfileForm, ProfileSection, actions.ts)
    │  ├─ workouts/              # Same shape
    │  └─ balance/               # Daily balance components
@@ -81,12 +81,14 @@ fitness-tracker/
    │  └─ seed.ts                # Repeatable dev seed: Polish sample data + relation checks
    ├─ server/                   # BACKEND: data access layer (server-only)
    │  ├─ CLAUDE.md
-   │  ├─ dal/                   # Read functions: getDiaryDay(date), listFoods(q), getGoals() (exists: settings.ts)
-   │  └─ services/              # Multi-table writes in transactions, used by actions (exists: settings.ts)
+   │  ├─ dal/                   # Read functions: getDiaryDay(date), listFoods(), getGoals() (exists: settings.ts, foods.ts)
+   │  └─ services/              # Multi-table writes in transactions, used by actions (exists: settings.ts, foods.ts)
    ├─ lib/                      # Pure, isomorphic, unit-tested
    │  ├─ CLAUDE.md
-   │  ├─ validation/            # Zod schemas (drizzle-zod + refinements) per feature (exists: profile.ts)
-   │  ├─ nutrition.ts           # Portion → kcal/macros, day totals, % of goal (exists: BMR, TDEE, age)
+   │  ├─ validation/            # Zod schemas (drizzle-zod + refinements) per feature (exists: profile.ts, foods.ts)
+   │  ├─ nutrition.ts           # Portion → kcal/macros, day totals, % of goal (exists: BMR, TDEE, age, kcalFromMacros)
+   │  ├─ numbers.ts             # parseDecimal (shared by validators) (exists)
+   │  ├─ search.ts              # normalizeForSearch, matchesQuery: case- and diacritics-insensitive (exists)
    │  ├─ dates.ts               # ISO date helpers (local day, no TZ drift)
    │  └─ utils.ts               # cn(), formatters
    └─ types/                    # Cross-cutting derived types (DiaryDayView, ActionResult<T>)
@@ -95,7 +97,7 @@ Tests sit next to their code (`*.test.ts`). They focus on `lib/` and on `server/
 
 ## Data model (Drizzle, `src/db/schema`)
 - **settings**: singleton row (`id = 1`, check constraint) with `sex` (male/female), `birthDate`, `heightCm`, `weightKg`, `activityLevel` (sedentary/light/moderate/active/very_active), `kcalGoal`, `proteinGoalG?`. No carbs or fat goals. BMR is Mifflin-St Jeor (`10·kg + 6.25·cm − 5·age + 5` male / `−161` female); TDEE is BMR × activity multiplier (1.2 / 1.375 / 1.55 / 1.725 / 1.9). Both are computed in `lib/nutrition.ts`, not stored. `kcalGoal` is user-editable and prefilled from TDEE.
-- **foods**: `name`, `kcal`, `proteinG`, `carbsG`, `fatG` (all required, per 100 g), `archivedAt?`, timestamps. Archive instead of delete so the history stays intact. No basis, brand or serving size. Foods made from other foods come in a later task.
+- **foods**: `name`, `kcal`, `proteinG`, `carbsG`, `fatG` (all required, per 100 g), `archivedAt?`, timestamps. Removing archives the food so the history stays intact; an archived food that no diary entry references can then be deleted permanently. No basis, brand or serving size. Protein + carbs + fat ≤ 100 g. Names are unique among non-archived foods, ignoring case (enforced in the service, not the DB). Foods made from other foods come in a later task.
 - **diary_entries**: `date`, `meal` (enum breakfast/lunch/dinner/snack/other), `foodId` FK (restrict), `quantityG`, plus **snapshot** columns `kcal`, `proteinG`, `carbsG`, `fatG` computed at insert time, so later food edits don't change past days. Index on `(date, meal)`.
 - **workouts**: `type` (treadmill/training), `date`, `name?`, `notes?`, `kcalBurned?`.
 - **treadmill_sessions**: 1:1 with a workout (`workoutId` unique FK, cascade): `durationMin`, `speedKmh`, `inclinePct`, `distanceKm?`. Only treadmill workouts have one. A service enforces the type rule, not the DB.
@@ -133,4 +135,4 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 3. Add the Postgres service to the compose files, and add `DATABASE_URL` to `.env.local`/`.env.production`. (done: FIT-6, plus npm run db:check)
 4. Run `shadcn init` (Tailwind 4) and add the primitives. (done: FIT-8)
 5. Write the schema, generate the first migration, and seed. (done: FIT-7, plus npm run db:generate / db:migrate / db:seed)
-6. Build foods, then profile, then the planner, workouts and balance. (done: foods pending, profile FIT-10)
+6. Build foods, then profile, then the planner, workouts and balance. (done: foods FIT-11, profile FIT-10)

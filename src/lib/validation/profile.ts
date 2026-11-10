@@ -1,4 +1,5 @@
 import { isIsoDate } from "@/lib/dates";
+import { parseDecimal } from "@/lib/numbers";
 import { ACTIVITY_LEVELS, SEXES, type ActivityLevel, type Sex } from "@/lib/nutrition";
 
 export const PROFILE_FIELDS = [
@@ -39,19 +40,11 @@ export type ProfileParseResult =
   | { ok: false; fieldErrors: Partial<Record<ProfileField, ProfileErrorCode>> };
 
 const MIN_BIRTH_DATE = "1900-01-01";
-const DECIMAL = /^-?\d+(\.\d+)?$/;
 const INTEGER = /^\d+$/;
 
 function readField(formData: FormData, name: ProfileField): string {
   const value = formData.get(name);
   return typeof value === "string" ? value.trim() : "";
-}
-
-/** Parses a decimal with a comma or dot separator and rounds it to 1 decimal. Returns null if not numeric. */
-function parseDecimal(raw: string): number | null {
-  const normalized = raw.replace(",", ".");
-  if (!DECIMAL.test(normalized)) return null;
-  return Math.round(Number(normalized) * 10) / 10;
 }
 
 /** Reads the 7 fields from FormData (names equal ProfileField), validates per D6. `today` is "YYYY-MM-DD". */

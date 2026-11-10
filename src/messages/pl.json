@@ -96,6 +96,92 @@
       "proteinGoalRange": "Podaj białko od 0 do 500 g."
     }
   },
+  "foods": {
+    "columns": {
+      "name": "Nazwa",
+      "kcal": "Energia",
+      "proteinG": "Białko",
+      "carbsG": "Węglowodany",
+      "fatG": "Tłuszcz",
+      "actions": "Akcje"
+    },
+    "fields": {
+      "name": "Nazwa",
+      "kcal": "Energia",
+      "proteinG": "Białko",
+      "carbsG": "Węglowodany",
+      "fatG": "Tłuszcz"
+    },
+    "units": {
+      "kcal": "kcal",
+      "g": "g"
+    },
+    "per100g": "Wartości na 100 g",
+    "search": {
+      "label": "Szukaj produktów",
+      "placeholder": "Szukaj po nazwie…"
+    },
+    "showArchived": "Pokaż usunięte produkty",
+    "archivedBadge": "Usunięty",
+    "empty": {
+      "title": "Brak produktów",
+      "description": "Dodaj pierwszy produkt, aby planować posiłki."
+    },
+    "noResults": "Brak produktów pasujących do „{query}”.",
+    "actions": {
+      "add": "Dodaj produkt",
+      "edit": "Edytuj",
+      "archive": "Usuń",
+      "restore": "Przywróć",
+      "delete": "Usuń na stałe",
+      "save": "Zapisz",
+      "saving": "Zapisywanie…",
+      "cancel": "Anuluj"
+    },
+    "dialog": {
+      "addTitle": "Dodaj produkt",
+      "editTitle": "Edytuj produkt",
+      "description": "Wartości odżywcze na 100 g.",
+      "editHint": "Zmiany dotyczą tylko nowych posiłków. Zapisane dni zachowują swoje wartości."
+    },
+    "macros": {
+      "hint": "≈ {kcal} kcal z makroskładników",
+      "use": "Użyj"
+    },
+    "confirmArchive": {
+      "title": "Usunąć produkt?",
+      "description": "„{name}” zniknie z listy i z planera posiłków. Zapisane dni go zachowają. Możesz go później przywrócić.",
+      "confirm": "Usuń",
+      "removing": "Usuwanie…"
+    },
+    "confirmDelete": {
+      "title": "Usunąć produkt na stałe?",
+      "description": "„{name}” zostanie trwale usunięty z bazy. Tej operacji nie można cofnąć.",
+      "confirm": "Usuń na stałe",
+      "deleting": "Usuwanie…"
+    },
+    "toast": {
+      "created": "Dodano produkt",
+      "updated": "Zapisano produkt",
+      "archived": "Usunięto produkt",
+      "restored": "Przywrócono produkt",
+      "nameTaken": "Produkt o nazwie „{name}” już istnieje.",
+      "deleted": "Usunięto produkt na stałe",
+      "inUse": "„{name}” występuje w zapisanych posiłkach, więc nie można go usunąć na stałe. Pozostaje ukryty na liście.",
+      "failed": "Coś poszło nie tak. Spróbuj ponownie."
+    },
+    "errors": {
+      "nameRequired": "Podaj nazwę.",
+      "nameTooLong": "Użyj maksymalnie 100 znaków.",
+      "nameTaken": "Produkt o tej nazwie już istnieje.",
+      "kcalRange": "Podaj energię od 0 do 900 kcal.",
+      "proteinRange": "Podaj białko od 0 do 100 g.",
+      "carbsRange": "Podaj węglowodany od 0 do 100 g.",
+      "fatRange": "Podaj tłuszcz od 0 do 100 g.",
+      "macrosSum": "Białko, węglowodany i tłuszcz razem nie mogą przekroczyć 100 g.",
+      "foodInUse": "Ten produkt występuje w zapisanych posiłkach i nie można go usunąć."
+    }
+  },
   "common": {
     "emptyTitle": "Nic tu jeszcze nie ma",
     "comingSoon": "Ten widok pojawi się wkrótce."

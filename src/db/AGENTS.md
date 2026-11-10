@@ -23,7 +23,7 @@
 **Conventions:**
 - snake_case in the DB, camelCase in TS (`casing: "snake_case"`).
 - Types come from `$inferSelect` / `$inferInsert`, never hand-written.
-- Foods and exercises are archived (`archivedAt`), never deleted.
+- Foods and exercises are archived (`archivedAt`). An archived food may be hard-deleted only when no diary entry references it (FK `restrict`).
 - Diary entries store nutrition snapshots, so later food edits do not change past days.
 - Schema change flow: edit `schema/` → `npm run db:generate` → review the SQL → `npm run db:migrate` → update `seed.ts` if needed.
 - See `CLAUDE_ARCHITECTURE.md` ("Data model") for the model.

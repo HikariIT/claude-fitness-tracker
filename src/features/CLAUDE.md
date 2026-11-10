@@ -4,7 +4,8 @@ Each feature is a folder: `components/` (client and server UI for that feature) 
 
 **Slices:**
 - `profile/`: `ProfileSection` (async server component, reads settings through `server/dal`), `ProfileForm` (client, live BMR/TDEE, Save), `actions.ts` (`saveProfile`).
-- `planner/`, `foods/`, `workouts/`, `balance/`: planned, not built yet.
+- `foods/`: `FoodsSection` (async server component, `await connection()`, reads `listFoods`), `FoodsView` (client: search, show-removed toggle, dialogs), `FoodsTable`, `FoodFormDialog` (add/edit, `useActionState(saveFood)`, live kcal-from-macros hint), `ConfirmFoodDialog` (confirms archive, or permanent delete of an archived food), `actions.ts` (`saveFood`, `archiveFoodAction`, `restoreFoodAction`, `deleteFoodAction`).
+- `planner/`, `workouts/`, `balance/`: planned, not built yet.
 
 **Adding a feature:**
 1. Create `features/<name>/components/` and `features/<name>/actions.ts`.

@@ -96,6 +96,92 @@
       "proteinGoalRange": "Enter protein from 0 to 500 g."
     }
   },
+  "foods": {
+    "columns": {
+      "name": "Name",
+      "kcal": "Energy",
+      "proteinG": "Protein",
+      "carbsG": "Carbs",
+      "fatG": "Fat",
+      "actions": "Actions"
+    },
+    "fields": {
+      "name": "Name",
+      "kcal": "Energy",
+      "proteinG": "Protein",
+      "carbsG": "Carbohydrates",
+      "fatG": "Fat"
+    },
+    "units": {
+      "kcal": "kcal",
+      "g": "g"
+    },
+    "per100g": "Values per 100 g",
+    "search": {
+      "label": "Search foods",
+      "placeholder": "Search by name…"
+    },
+    "showArchived": "Show removed foods",
+    "archivedBadge": "Removed",
+    "empty": {
+      "title": "No foods yet",
+      "description": "Add your first food to start planning meals."
+    },
+    "noResults": "No foods match “{query}”.",
+    "actions": {
+      "add": "Add food",
+      "edit": "Edit",
+      "archive": "Remove",
+      "restore": "Restore",
+      "delete": "Delete",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel"
+    },
+    "dialog": {
+      "addTitle": "Add food",
+      "editTitle": "Edit food",
+      "description": "Nutrition values per 100 g.",
+      "editHint": "Changes apply to new meals only. Days already logged keep their values."
+    },
+    "macros": {
+      "hint": "≈ {kcal} kcal from macros",
+      "use": "Use"
+    },
+    "confirmArchive": {
+      "title": "Remove food?",
+      "description": "“{name}” will be hidden from the list and the meal planner. Days already logged keep it. You can restore it later.",
+      "confirm": "Remove",
+      "removing": "Removing…"
+    },
+    "confirmDelete": {
+      "title": "Delete food permanently?",
+      "description": "“{name}” will be deleted from the database for good. This cannot be undone.",
+      "confirm": "Delete permanently",
+      "deleting": "Deleting…"
+    },
+    "toast": {
+      "created": "Food added",
+      "updated": "Food saved",
+      "archived": "Food removed",
+      "restored": "Food restored",
+      "nameTaken": "A food named “{name}” already exists.",
+      "deleted": "Food deleted",
+      "inUse": "“{name}” is used in logged meals, so it can’t be deleted. It stays removed from the list.",
+      "failed": "Something went wrong. Try again."
+    },
+    "errors": {
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "Use at most 100 characters.",
+      "nameTaken": "A food with this name already exists.",
+      "kcalRange": "Enter energy from 0 to 900 kcal.",
+      "proteinRange": "Enter protein from 0 to 100 g.",
+      "carbsRange": "Enter carbohydrates from 0 to 100 g.",
+      "fatRange": "Enter fat from 0 to 100 g.",
+      "macrosSum": "Protein, carbohydrates and fat together cannot exceed 100 g.",
+      "foodInUse": "This food is used in logged meals and can’t be deleted."
+    }
+  },
   "common": {
     "emptyTitle": "Nothing here yet",
     "comingSoon": "This view is coming soon."

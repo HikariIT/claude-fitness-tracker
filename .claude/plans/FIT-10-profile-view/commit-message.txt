@@ -1,0 +1,7 @@
+[FIT-10]: Personal Data View with Base Caloric Requirement
+
+- Add nutrition formulas (ageOn, calcBmr, calcTdee) and profile form parser with Vitest tests
+- Add ActionResult type, cached settings DAL, settings upsert service and saveProfile Server Action
+- Add FormField, NumberInput and SubmitButton form components and profile message keys in EN and PL
+- Add ProfileForm with live BMR/TDEE results and wire the /profile page to a Suspense-wrapped ProfileSection
+- Add navigators for lib, server and features, and update components, app and architecture docs for the profile view

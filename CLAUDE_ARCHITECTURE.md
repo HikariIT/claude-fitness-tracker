@@ -43,14 +43,14 @@ fitness-tracker/
    │  ├─ foods/
    │  │  ├─ components/         # FoodForm, FoodTable, FoodPicker
    │  │  └─ actions.ts          # createFood, updateFood, archiveFood
-   │  ├─ profile/               # Personal data form + actions.ts (was settings/)
+   │  ├─ profile/               # Personal data form + actions.ts (was settings/) (exists: ProfileForm, ProfileSection, actions.ts)
    │  ├─ workouts/              # Same shape
    │  └─ balance/               # Daily balance components
    ├─ components/               # SHARED, feature-agnostic UI
    │  ├─ CLAUDE.md
    │  ├─ ui/                    # shadcn/ui primitives (generated; do not hand-edit much)
    │  ├─ layout/                # AppNav, LanguageToggle, NotebookSheet, PageHeader, EmptyState
-   │  ├─ forms/                 # FormField, NumberInput, SubmitButton (useActionState/pending)
+   │  ├─ forms/                 # FormField, NumberInput, SubmitButton (useActionState/pending) (exists)
    │  └─ data/                  # StatCard, DatePager; later MacroBar, KcalRing
    ├─ i18n/                     # next-intl: routing, navigation (Link/useRouter), request
    │  ├─ CLAUDE.md
@@ -81,12 +81,12 @@ fitness-tracker/
    │  └─ seed.ts                # Repeatable dev seed: Polish sample data + relation checks
    ├─ server/                   # BACKEND: data access layer (server-only)
    │  ├─ CLAUDE.md
-   │  ├─ dal/                   # Read functions: getDiaryDay(date), listFoods(q), getGoals()
-   │  └─ services/              # Multi-table writes in transactions, used by actions
+   │  ├─ dal/                   # Read functions: getDiaryDay(date), listFoods(q), getGoals() (exists: settings.ts)
+   │  └─ services/              # Multi-table writes in transactions, used by actions (exists: settings.ts)
    ├─ lib/                      # Pure, isomorphic, unit-tested
    │  ├─ CLAUDE.md
-   │  ├─ validation/            # Zod schemas (drizzle-zod + refinements) per feature
-   │  ├─ nutrition.ts           # Portion → kcal/macros, day totals, % of goal
+   │  ├─ validation/            # Zod schemas (drizzle-zod + refinements) per feature (exists: profile.ts)
+   │  ├─ nutrition.ts           # Portion → kcal/macros, day totals, % of goal (exists: BMR, TDEE, age)
    │  ├─ dates.ts               # ISO date helpers (local day, no TZ drift)
    │  └─ utils.ts               # cn(), formatters
    └─ types/                    # Cross-cutting derived types (DiaryDayView, ActionResult<T>)
@@ -94,7 +94,7 @@ fitness-tracker/
 Tests sit next to their code (`*.test.ts`). They focus on `lib/` and on `server/` against a test DB.
 
 ## Data model (Drizzle, `src/db/schema`)
-- **settings**: singleton row (`id = 1`, check constraint) with `sex` (male/female), `birthDate`, `heightCm`, `weightKg`, `activityLevel` (sedentary/light/moderate/active/very_active), `kcalGoal`, `proteinGoalG?`. No carbs or fat goals. The base requirement (BMR × activity) is computed in `lib/`, not stored.
+- **settings**: singleton row (`id = 1`, check constraint) with `sex` (male/female), `birthDate`, `heightCm`, `weightKg`, `activityLevel` (sedentary/light/moderate/active/very_active), `kcalGoal`, `proteinGoalG?`. No carbs or fat goals. BMR is Mifflin-St Jeor (`10·kg + 6.25·cm − 5·age + 5` male / `−161` female); TDEE is BMR × activity multiplier (1.2 / 1.375 / 1.55 / 1.725 / 1.9). Both are computed in `lib/nutrition.ts`, not stored. `kcalGoal` is user-editable and prefilled from TDEE.
 - **foods**: `name`, `kcal`, `proteinG`, `carbsG`, `fatG` (all required, per 100 g), `archivedAt?`, timestamps. Archive instead of delete so the history stays intact. No basis, brand or serving size. Foods made from other foods come in a later task.
 - **diary_entries**: `date`, `meal` (enum breakfast/lunch/dinner/snack/other), `foodId` FK (restrict), `quantityG`, plus **snapshot** columns `kcal`, `proteinG`, `carbsG`, `fatG` computed at insert time, so later food edits don't change past days. Index on `(date, meal)`.
 - **workouts**: `type` (treadmill/training), `date`, `name?`, `notes?`, `kcalBurned?`.
@@ -133,4 +133,4 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 3. Add the Postgres service to the compose files, and add `DATABASE_URL` to `.env.local`/`.env.production`. (done: FIT-6, plus npm run db:check)
 4. Run `shadcn init` (Tailwind 4) and add the primitives. (done: FIT-8)
 5. Write the schema, generate the first migration, and seed. (done: FIT-7, plus npm run db:generate / db:migrate / db:seed)
-6. Build foods, then profile, then the planner, workouts and balance.
+6. Build foods, then profile, then the planner, workouts and balance. (done: foods pending, profile FIT-10)

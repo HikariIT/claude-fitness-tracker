@@ -79,7 +79,8 @@
   --ring: var(--color-dusk-blue-600);
   --paper-line: var(--color-icy-blue-700);
   --paper-margin: var(--color-steel-blue-500);
-  --paper-line-gap: 1.75rem;
+  /* One ruled line = one form control (h-9). Sheet text uses leading-9 to stay on the lines. */
+  --paper-line-gap: 2.25rem;
   --paper-margin-x: 1.5rem;
 }
 

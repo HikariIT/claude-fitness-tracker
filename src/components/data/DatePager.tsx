@@ -30,7 +30,7 @@ export function DatePager({ date, basePath }: DatePagerProps) {
         <ChevronLeft />
       </Link>
       <div className="flex flex-1 flex-col items-center gap-1 text-center">
-        <p className="font-hand text-2xl leading-7 text-primary">{label}</p>
+        <p className="font-hand text-2xl leading-9 text-primary">{label}</p>
         <Link href={basePath} className={buttonVariants({ variant: "outline", size: "sm" })}>
           {t("today")}
         </Link>

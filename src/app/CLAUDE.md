@@ -6,7 +6,7 @@ Next.js App Router. Every route lives under `[locale]/` (`/pl/...`, `/en/...`). 
 - `fonts.ts`: Google Fonts. `font-sans` = Nunito (body), `font-hand` = Patrick Hand (headings).
 - `[locale]/layout.tsx`: root layout. `<html lang>`, fonts, `NextIntlClientProvider`, header with `LanguageToggle`, `AppNav`, `NotebookSheet`, sonner `Toaster`. `hasLocale` → `notFound()`, `setRequestLocale`, `generateStaticParams`.
 - `[locale]/page.tsx`: redirects to `/planner`.
-- `[locale]/profile/page.tsx`: placeholder (personal data).
+- `[locale]/profile/page.tsx`: personal data form. Async `ProfileSection` in `<Suspense>` reads settings after `await connection()` (D8).
 - `[locale]/foods/page.tsx`: placeholder (food database).
 - `[locale]/planner/page.tsx`: placeholder (food planner).
 - `[locale]/workouts/page.tsx`: placeholder (workout planner).

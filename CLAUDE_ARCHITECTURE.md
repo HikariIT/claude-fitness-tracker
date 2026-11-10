@@ -1,6 +1,6 @@
 # Architecture Plan: Fitness Tracker
 
-**Stack:** Next.js 16.4 App Router (`cacheComponents: true`), React 19.3, TypeScript strict, Tailwind 4 + shadcn/ui, PostgreSQL + Drizzle ORM, Zod, Vitest, Bun.
+**Stack:** Next.js 16.4 App Router (`cacheComponents: true`), React 19.3, TypeScript strict, Tailwind 4 + shadcn/ui, PostgreSQL + Drizzle ORM, Zod, Vitest, npm.
 **Scope:** one user with no auth. V1 views are the food diary and the food library. The workout schema is in from day one, but its views come later.
 
 ## Decisions
@@ -99,7 +99,7 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 ## Sub-CLAUDE.md navigators (each ≤ ~40 lines)
 | File | Content |
 |---|---|
-| `/CLAUDE.md` | Keep the existing text, then add: stack, commands (`bun dev`, `db:generate`, `db:migrate`, `db:seed`, `test`), layering rules, a map of the sub-files |
+| `/CLAUDE.md` | Keep the existing text, then add: stack, commands (`npm run dev`, `db:generate`, `db:migrate`, `db:seed`, `test`), layering rules, a map of the sub-files |
 | `src/app/CLAUDE.md` | Route map, thin-page rule, loading/error conventions, "read the Next docs first" |
 | `src/features/CLAUDE.md` | Slice anatomy, how to add a feature, action template |
 | `src/components/CLAUDE.md` | Shared vs feature UI, shadcn add command, prop typing conventions |

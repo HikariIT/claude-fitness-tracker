@@ -50,3 +50,9 @@ Thumbs.db
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# npm is the only package manager
+bun.lock
+bun.lockb
+yarn.lock
+pnpm-lock.yaml

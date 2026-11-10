@@ -38,5 +38,5 @@ A plan is a folder `.claude/plans/<task_name>/`:
 
 **Read:** `<path>`, `<path>:<lines or symbol>`, `<doc path>`: read-only context, nothing else needed
 
-**Verify:** `<command>`, e.g. `bun run lint`, `bunx tsc --noEmit`, `bun test <path>`
+**Verify:** `<command>`, e.g. `npm run lint`, `npx tsc --noEmit`, `npm test -- <path>`
 ~~~

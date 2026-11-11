@@ -215,10 +215,6 @@
       "finalWeightTooLow": "Waga końcowa jest za mała dla tych składników."
     }
   },
-  "common": {
-    "emptyTitle": "Nic tu jeszcze nie ma",
-    "comingSoon": "Ten widok pojawi się wkrótce."
-  },
   "datePager": {
     "label": "Wybór dnia",
     "previous": "Poprzedni dzień",
@@ -448,6 +444,41 @@
       "setWeightRange": "Podaj od 0 do 1000 kg.",
       "exerciseUnavailable": "To ćwiczenie nie jest już dostępne.",
       "stepsRange": "Podaj liczbę całkowitą od 0 do 100000."
+    }
+  },
+  "balance": {
+    "units": { "kcal": "kcal", "kg": "kg" },
+    "noProfile": {
+      "title": "Brak danych osobowych",
+      "description": "Bilans wymaga Twojej podstawowej przemiany materii. Najpierw uzupełnij dane osobowe.",
+      "link": "Przejdź do danych osobowych"
+    },
+    "day": {
+      "title": "Podsumowanie dnia",
+      "eaten": "Zjedzone",
+      "expenditure": "Spalone",
+      "expenditureHint": "Podstawa {baseline} + aktywność {burned}",
+      "balance": "Bilans",
+      "weightChange": "Zmiana wagi",
+      "notLogged": "Brak posiłków w tym dniu, więc nie ma bilansu.",
+      "notLoggedLink": "Otwórz planer posiłków"
+    },
+    "status": {
+      "deficit": "Deficyt {kcal} kcal",
+      "surplus": "Nadwyżka {kcal} kcal",
+      "even": "Na zero"
+    },
+    "week": {
+      "title": "Tydzień {from} – {to}",
+      "day": "Dzień",
+      "eaten": "Zjedzone",
+      "expenditure": "Spalone",
+      "balance": "Bilans",
+      "weightChange": "Waga",
+      "status": "Status",
+      "notLogged": "Brak wpisów",
+      "total": "Suma tygodnia",
+      "loggedDays": "Dni z wpisami: {count} z 7"
     }
   }
 }

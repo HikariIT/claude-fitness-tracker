@@ -34,7 +34,8 @@ fitness-tracker/
    │  │  ├─ planner/[date]/page.tsx # Food planner, any ISO day; invalid → 404 (exists)
    │  │  ├─ workouts/page.tsx   # Workout planner, today (exists: WorkoutsSection in Suspense)
    │  │  ├─ workouts/[date]/page.tsx # Workout planner, any ISO day; invalid → 404 (exists)
-   │  │  ├─ balance/page.tsx    # Total balance (placeholder)
+   │  │  ├─ balance/page.tsx    # Total balance, today (exists: BalanceSection in Suspense)
+   │  │  ├─ balance/[date]/page.tsx # Total balance, any ISO day; invalid → 404 (exists)
    │  │  ├─ [...rest]/page.tsx  # Catch-all → notFound()
    │  │  └─ not-found.tsx       # Localized 404
    ├─ features/                 # Vertical slices: feature-specific UI + actions
@@ -49,7 +50,7 @@ fitness-tracker/
    │  ├─ workouts/               # Workout planner (exists)
    │  │  ├─ components/         # WorkoutsSection (server), WorkoutsView, WorkoutCard, TreadmillFormDialog, TrainingFormDialog, ExercisePicker, StepsCard, StepsFormDialog, BurnedTotals, ConfirmWorkoutDialog
    │  │  └─ actions.ts          # saveWorkout, deleteWorkoutAction, saveSteps, clearStepsAction (exists)
-   │  └─ balance/               # Daily balance components
+   │  └─ balance/               # Daily balance and Mon–Sun week (exists: BalanceSection, BalanceView, DaySummary, WeekTable)
    ├─ components/               # SHARED, feature-agnostic UI
    │  ├─ CLAUDE.md
    │  ├─ ui/                    # shadcn/ui primitives (generated; do not hand-edit much)
@@ -97,6 +98,7 @@ fitness-tracker/
    │  ├─ dates.ts               # ISO date helpers (local day, no TZ drift) (exists: localIsoDate, isIsoDate)
    │  ├─ diary.ts               # Meal grouping and order, portion/total nutrition, default meal (exists)
    │  ├─ workouts.ts            # Treadmill distance, ACSM and steps kcal estimates, sumBurned, set grouping (exists)
+   │  ├─ balance.ts             # Baseline (BMR × 1.2), day/week balance, kg from 7700 kcal (exists)
    │  └─ utils.ts               # cn(), formatters
    └─ types/                    # Cross-cutting derived types (DiaryDayView, ActionResult<T>)
 ```
@@ -143,4 +145,4 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 3. Add the Postgres service to the compose files, and add `DATABASE_URL` to `.env.local`/`.env.production`. (done: FIT-6, plus npm run db:check)
 4. Run `shadcn init` (Tailwind 4) and add the primitives. (done: FIT-8)
 5. Write the schema, generate the first migration, and seed. (done: FIT-7, plus npm run db:generate / db:migrate / db:seed)
-6. Build foods, then profile, then the planner, workouts and balance. (done: foods FIT-11, profile FIT-10, composite foods FIT-12, planner FIT-13, workouts FIT-14)
+6. Build foods, then profile, then the planner, workouts and balance. (done: foods FIT-11, profile FIT-10, composite foods FIT-12, planner FIT-13, workouts FIT-14, balance FIT-15)

@@ -29,6 +29,18 @@ export function addDays(iso: string, days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
+/** D5: the Monday of the ISO week containing `iso` ("YYYY-MM-DD"). Monday maps to itself, Sunday to the Monday 6 days earlier. */
+export function weekStart(iso: string): string {
+  const offset = (isoToUtcDate(iso).getUTCDay() + 6) % 7;
+  return addDays(iso, -offset);
+}
+
+/** D5: the 7 dates Monday..Sunday of the week containing `iso`. */
+export function weekDays(iso: string): string[] {
+  const start = weekStart(iso);
+  return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+}
+
 /** The local calendar date of `now` as "YYYY-MM-DD" (D2). Uses getFullYear/getMonth/getDate, not UTC. */
 export function localIsoDate(now: Date): string {
   const y = String(now.getFullYear());

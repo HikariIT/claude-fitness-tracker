@@ -21,7 +21,7 @@
 **Notebook ruling:** `--paper-line-gap` is `2.25rem` (36px = `h-9`, the standard control height). The sheet uses `py-9 leading-9`. Everything placed on the sheet takes a whole number of lines: `FormField` rows (label, control, error) are one line each and stack with no gap, sections are separated by `space-y-9` / `gap-y-9`, and cards use heights in whole lines (e.g. `min-h-27` = 3 lines). Keep controls as block or flex items, not inline, or the text baseline adds sub-pixel drift.
 
 **`data/`**:
-- `StatCard({ label, value: number, unit?, hint?, maximumFractionDigits? })`: one number tile. Formats numbers with `useFormatter`.
+- `StatCard({ label, value: number, unit?, hint?, maximumFractionDigits?, signDisplay? })`: one number tile. Formats numbers with `useFormatter`. `signDisplay` is `"auto"` (default) or `"exceptZero"` (shows `+`/`−` for non-zero values, used for balances).
 - `DatePager({ date, basePath })`: prev/next day links to `<basePath>/<YYYY-MM-DD>`. `basePath` is `"/planner" | "/workouts" | "/balance"`, and the "today" button links to `basePath` alone.
 
 **Rules:**

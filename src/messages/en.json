@@ -215,10 +215,6 @@
       "finalWeightTooLow": "The final weight is too low for these ingredients."
     }
   },
-  "common": {
-    "emptyTitle": "Nothing here yet",
-    "comingSoon": "This view is coming soon."
-  },
   "datePager": {
     "label": "Day picker",
     "previous": "Previous day",
@@ -448,6 +444,41 @@
       "setWeightRange": "Enter 0–1000 kg.",
       "exerciseUnavailable": "This exercise is no longer available.",
       "stepsRange": "Enter a whole number from 0 to 100000."
+    }
+  },
+  "balance": {
+    "units": { "kcal": "kcal", "kg": "kg" },
+    "noProfile": {
+      "title": "No personal data yet",
+      "description": "The balance needs your basal metabolic rate. Fill in your personal data first.",
+      "link": "Go to personal data"
+    },
+    "day": {
+      "title": "Day summary",
+      "eaten": "Eaten",
+      "expenditure": "Burned",
+      "expenditureHint": "Base {baseline} + activity {burned}",
+      "balance": "Balance",
+      "weightChange": "Weight change",
+      "notLogged": "No food logged for this day, so there is no balance.",
+      "notLoggedLink": "Open the food planner"
+    },
+    "status": {
+      "deficit": "Deficit of {kcal} kcal",
+      "surplus": "Surplus of {kcal} kcal",
+      "even": "Even"
+    },
+    "week": {
+      "title": "Week {from} – {to}",
+      "day": "Day",
+      "eaten": "Eaten",
+      "expenditure": "Burned",
+      "balance": "Balance",
+      "weightChange": "Weight",
+      "status": "Status",
+      "notLogged": "Not logged",
+      "total": "Week total",
+      "loggedDays": "Days logged: {count} of 7"
     }
   }
 }

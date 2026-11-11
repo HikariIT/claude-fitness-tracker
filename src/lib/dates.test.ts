@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays, isIsoDate, isoToUtcDate, localIsoDate } from "./dates";
+import { addDays, isIsoDate, isoToUtcDate, localIsoDate, weekDays, weekStart } from "./dates";
 
 describe("localIsoDate", () => {
   it("returns the local calendar date, not the UTC one", () => {

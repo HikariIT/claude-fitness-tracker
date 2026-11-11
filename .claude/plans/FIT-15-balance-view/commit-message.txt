@@ -1,0 +1,6 @@
+[FIT-15]: Implement Daily Caloric Balance View with Deficit Indicator
+
+- Add weekStart and weekDays to dates.ts, and balance.ts with baselineKcal, dayBalance, weekBalance and balanceStatus, with Vitest coverage
+- Add the balance namespace (units, noProfile, day, status, week) to en.json and pl.json
+- Add signDisplay to StatCard, and BalanceStatusLabel, DaySummary and WeekTable components under features/balance/components
+- Add BalanceSection and BalanceView, replace the balance placeholder with BalanceSection, add balance/[date] route, remove the common message namespace and update the docs

@@ -79,7 +79,15 @@ export function EntriesTable({ entries, foodsById, onEdit, onDelete }: EntriesTa
                   ) : null}
                 </span>
               </TableCell>
-              <TableCell className={numClass}>{`${num(entry.quantityG)} ${t("units.g")}`}</TableCell>
+              <TableCell className={numClass}>
+                {entry.portionName !== null
+                  ? t("portionQuantity", {
+                      count: num(entry.portionCount ?? 0),
+                      name: entry.portionName,
+                      grams: num(entry.quantityG),
+                    })
+                  : `${num(entry.quantityG)} ${t("units.g")}`}
+              </TableCell>
               <TableCell className={numClass}>
                 {format.number(entry.kcal, { maximumFractionDigits: 0 })}
               </TableCell>

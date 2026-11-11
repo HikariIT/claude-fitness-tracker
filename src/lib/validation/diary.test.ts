@@ -7,7 +7,8 @@ function form(overrides: Record<string, string> = {}): FormData {
     date: "2026-11-11",
     meal: "lunch",
     foodId: "12",
-    quantityG: "150",
+    portionId: "",
+    amount: "150",
     ...overrides,
   };
   for (const [key, value] of Object.entries(values)) fd.set(key, value);
@@ -15,37 +16,75 @@ function form(overrides: Record<string, string> = {}): FormData {
 }
 
 describe("parseDiaryEntryForm", () => {
-  it("accepts a valid entry", () => {
+  it("accepts a valid grams entry", () => {
     expect(parseDiaryEntryForm(form())).toEqual({
       ok: true,
-      data: { date: "2026-11-11", meal: "lunch", foodId: 12, quantityG: 150 },
+      data: {
+        date: "2026-11-11",
+        meal: "lunch",
+        foodId: 12,
+        amount: { kind: "grams", quantityG: 150 },
+      },
     });
   });
 
   it("accepts a comma decimal separator", () => {
-    const result = parseDiaryEntryForm(form({ quantityG: "12,5" }));
-    expect(result).toMatchObject({ ok: true, data: { quantityG: 12.5 } });
+    const result = parseDiaryEntryForm(form({ amount: "12,5" }));
+    expect(result).toMatchObject({ ok: true, data: { amount: { kind: "grams", quantityG: 12.5 } } });
   });
 
-  it("accepts the quantity boundaries 0.1 and 5000", () => {
-    expect(parseDiaryEntryForm(form({ quantityG: "0.1" }))).toMatchObject({ ok: true });
-    expect(parseDiaryEntryForm(form({ quantityG: "5000" }))).toMatchObject({ ok: true });
+  it("accepts the grams boundaries 0.1 and 5000", () => {
+    expect(parseDiaryEntryForm(form({ amount: "0.1" }))).toMatchObject({ ok: true });
+    expect(parseDiaryEntryForm(form({ amount: "5000" }))).toMatchObject({ ok: true });
   });
 
   it("rounds to 0.1 before the range check, so 0.05 is accepted as 0.1", () => {
-    expect(parseDiaryEntryForm(form({ quantityG: "0.05" }))).toMatchObject({
+    expect(parseDiaryEntryForm(form({ amount: "0.05" }))).toMatchObject({
       ok: true,
-      data: { quantityG: 0.1 },
+      data: { amount: { kind: "grams", quantityG: 0.1 } },
     });
   });
 
-  it("rejects quantities outside 0.1 to 5000", () => {
-    for (const quantityG of ["0.04", "5000.1", "0", "-1", "abc", ""]) {
-      expect(parseDiaryEntryForm(form({ quantityG }))).toEqual({
+  it("rejects grams outside 0.1 to 5000", () => {
+    for (const amount of ["0.04", "5000.1", "0", "-1", "abc", ""]) {
+      expect(parseDiaryEntryForm(form({ amount }))).toEqual({
         ok: false,
-        fieldErrors: { quantityG: "quantityRange" },
+        fieldErrors: { amount: "quantityRange" },
       });
     }
+  });
+
+  it("accepts a portion entry with a decimal count", () => {
+    expect(parseDiaryEntryForm(form({ portionId: "7", amount: "2,5" }))).toEqual({
+      ok: true,
+      data: {
+        date: "2026-11-11",
+        meal: "lunch",
+        foodId: 12,
+        amount: { kind: "portion", portionId: 7, count: 2.5 },
+      },
+    });
+  });
+
+  it("accepts the portion count boundaries 0.1 and 100", () => {
+    expect(parseDiaryEntryForm(form({ portionId: "7", amount: "0.1" }))).toMatchObject({ ok: true });
+    expect(parseDiaryEntryForm(form({ portionId: "7", amount: "100" }))).toMatchObject({ ok: true });
+  });
+
+  it("rejects portion counts outside 0.1 to 100", () => {
+    for (const amount of ["0", "100.1", "abc", ""]) {
+      expect(parseDiaryEntryForm(form({ portionId: "7", amount }))).toEqual({
+        ok: false,
+        fieldErrors: { amount: "portionCountRange" },
+      });
+    }
+  });
+
+  it("rejects a non-numeric portion id as unavailable", () => {
+    expect(parseDiaryEntryForm(form({ portionId: "abc", amount: "1" }))).toEqual({
+      ok: false,
+      fieldErrors: { portionId: "portionUnavailable" },
+    });
   });
 
   it("requires a food id", () => {

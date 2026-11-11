@@ -1,17 +1,19 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
-import type { Food, FoodComponent } from "@/server/dal/foods";
+import type { Food, FoodComponent, FoodPortion } from "@/server/dal/foods";
 import { saveCompositeFood, type CompositeFoodFormState } from "@/features/foods/actions";
 import { compositeNutrition, totalQuantity, type ComponentPortion } from "@/lib/composite";
 import { parseDecimal } from "@/lib/numbers";
+import { defaultPortion, findPortionByName, portionGrams } from "@/lib/portions";
 import { matchesQuery } from "@/lib/search";
 import type { CompositeFoodErrorField } from "@/lib/validation/composite-foods";
 import { FormField } from "@/components/forms/FormField";
 import { NumberInput } from "@/components/forms/NumberInput";
+import { PortionAmountInput, type PortionOption } from "@/components/forms/PortionAmountInput";
 import { SubmitButton } from "@/components/forms/SubmitButton";
 import { fieldControlClass } from "@/components/forms/field-styles";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PortionsEditor, type PortionRow } from "./PortionsEditor";
 
 type CompositeFoodDialogProps = {
   open: boolean;
@@ -33,6 +36,7 @@ type CompositeFoodDialogProps = {
   food: Food | null; // null = add, else edit this dish (food.isComposite === true)
   foods: Food[]; // all foods, archived included (for names and the picker)
   components: FoodComponent[]; // all ingredient rows; filter by foodId === food.id
+  portions: FoodPortion[]; // all portion rows; the dish's own rows and the ingredients' units
 };
 
 export function CompositeFoodDialog({
@@ -41,6 +45,7 @@ export function CompositeFoodDialog({
   food,
   foods,
   components,
+  portions,
 }: CompositeFoodDialogProps) {
   const t = useTranslations("foods");
   return (
@@ -56,6 +61,7 @@ export function CompositeFoodDialog({
           food={food}
           foods={foods}
           components={components}
+          portions={portions}
           onDone={() => onOpenChange(false)}
         />
       </DialogContent>
@@ -63,12 +69,14 @@ export function CompositeFoodDialog({
   );
 }
 
-type CompositeRow = { foodId: number; quantity: string };
+// amount is what the user typed: grams when portionId is null, otherwise a count of that portion (D5, D13).
+type CompositeRow = { foodId: number; portionId: number | null; amount: string };
 
 type CompositeFoodFormProps = {
   food: Food | null;
   foods: Food[];
   components: FoodComponent[];
+  portions: FoodPortion[];
   onDone: () => void;
 };
 
@@ -76,29 +84,74 @@ const nameCollator = new Intl.Collator("pl", { sensitivity: "base" });
 const MAX_CANDIDATES = 8;
 
 /** Mounted inside the dialog content, so its state resets each time the dialog opens. */
-function CompositeFoodForm({ food, foods, components, onDone }: CompositeFoodFormProps) {
+function CompositeFoodForm({
+  food,
+  foods,
+  components,
+  portions,
+  onDone,
+}: CompositeFoodFormProps) {
   const t = useTranslations("foods");
   const format = useFormatter();
   const [state, formAction] = useActionState(saveCompositeFood, null);
+
+  const portionsByFood = useMemo(() => {
+    const map = new Map<number, FoodPortion[]>();
+    for (const p of portions) {
+      const list = map.get(p.foodId);
+      if (list) list.push(p);
+      else map.set(p.foodId, [p]);
+    }
+    return map;
+  }, [portions]);
+  const portionsById = useMemo(() => new Map(portions.map((p) => [p.id, p])), [portions]);
 
   const [name, setName] = useState<string>(food?.name ?? "");
   const [finalWeightG, setFinalWeightG] = useState<string>(
     food?.finalWeightG != null ? String(food.finalWeightG) : "",
   );
+  // D2, D3: a new dish starts with a placeholder "Portion" row that is not saved until grams are typed.
+  const [portionRows, setPortionRows] = useState<PortionRow[]>(() =>
+    food
+      ? (portionsByFood.get(food.id) ?? []).map((p, i) => ({
+          key: i,
+          name: p.name,
+          grams: String(p.grams),
+        }))
+      : [{ key: 0, name: t("portions.defaultName"), grams: "", placeholder: true }],
+  );
   const [rows, setRows] = useState<CompositeRow[]>(() =>
     food
       ? components
           .filter((c) => c.foodId === food.id)
-          .map((c) => ({ foodId: c.componentFoodId, quantity: String(c.quantityG) }))
+          .map((c) => {
+            // D7: reopen the saved unit when that portion still exists, otherwise grams.
+            const match = findPortionByName(portionsByFood.get(c.componentFoodId) ?? [], c.portionName);
+            return match && c.portionCount !== null
+              ? { foodId: c.componentFoodId, portionId: match.id, amount: String(c.portionCount) }
+              : { foodId: c.componentFoodId, portionId: null, amount: String(c.quantityG) };
+          })
       : [],
   );
   const [query, setQuery] = useState<string>("");
 
   const foodsById = new Map(foods.map((f) => [f.id, f]));
 
+  const formatOneDecimal = (value: number) =>
+    format.number(value, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  // Grams of one ingredient row: the typed grams, or count × portion grams (D15). Null while unparseable.
+  const rowGrams = (row: CompositeRow): number | null => {
+    const amount = parseDecimal(row.amount);
+    if (amount === null) return null;
+    if (row.portionId === null) return amount;
+    const portion = portionsById.get(row.portionId);
+    return portion ? portionGrams(amount, portion.grams) : null;
+  };
+
   // Ingredients that parse and point at a known food: used for the total and the preview (D2, D6).
-  const portions: ComponentPortion[] = rows.flatMap((row) => {
-    const quantityG = parseDecimal(row.quantity);
+  const parts: ComponentPortion[] = rows.flatMap((row) => {
+    const quantityG = rowGrams(row);
     const source = foodsById.get(row.foodId);
     if (quantityG === null || quantityG <= 0 || !source) return [];
     return [
@@ -111,15 +164,11 @@ function CompositeFoodForm({ food, foods, components, onDone }: CompositeFoodFor
       },
     ];
   });
-  const totalG = totalQuantity(portions);
+  const totalG = totalQuantity(parts);
   const parsedFinalWeight = parseDecimal(finalWeightG);
   const previewFinalWeight =
     parsedFinalWeight !== null && parsedFinalWeight > 0 ? parsedFinalWeight : null;
-  const preview =
-    portions.length > 0 ? compositeNutrition(portions, previewFinalWeight) : null;
-
-  const formatOneDecimal = (value: number) =>
-    format.number(value, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const preview = parts.length > 0 ? compositeNutrition(parts, previewFinalWeight) : null;
 
   // Ingredient picker (D6): archived foods and the dish itself are never offered; cycles are left to the server.
   const trimmedQuery = query.trim();
@@ -138,12 +187,23 @@ function CompositeFoodForm({ food, foods, components, onDone }: CompositeFoodFor
           .sort((a, b) => nameCollator.compare(a.name, b.name))
           .slice(0, MAX_CANDIDATES);
 
+  const unitOptions = (foodId: number): PortionOption[] =>
+    (portionsByFood.get(foodId) ?? []).map((p) => ({
+      id: p.id,
+      label: t("portionOption", { name: p.name, grams: formatOneDecimal(p.grams) }),
+    }));
+
+  // D7: the unit defaults to the ingredient's first portion with amount 1, or to grams with 100.
   const addRow = (foodId: number) => {
-    setRows((prev) => [...prev, { foodId, quantity: "100" }]);
+    const def = defaultPortion(portionsByFood.get(foodId) ?? []);
+    setRows((prev) => [
+      ...prev,
+      { foodId, portionId: def?.id ?? null, amount: def ? "1" : "100" },
+    ]);
     setQuery("");
   };
-  const updateRowQuantity = (index: number, quantity: string) => {
-    setRows((prev) => prev.map((row, i) => (i === index ? { ...row, quantity } : row)));
+  const updateRow = (index: number, patch: Partial<CompositeRow>) => {
+    setRows((prev) => prev.map((row, i) => (i === index ? { ...row, ...patch } : row)));
   };
   const removeRow = (index: number) => {
     setRows((prev) => prev.filter((_, i) => i !== index));
@@ -239,6 +299,7 @@ function CompositeFoodForm({ food, foods, components, onDone }: CompositeFoodFor
               const source = foodsById.get(row.foodId);
               const rowName = source?.name ?? "";
               const rowError = fieldError(`component.${index}`);
+              const grams = rowGrams(row);
               return (
                 <li key={row.foodId} className="flex flex-col">
                   <input type="hidden" name="componentFoodId" value={row.foodId} />
@@ -249,16 +310,24 @@ function CompositeFoodForm({ food, foods, components, onDone }: CompositeFoodFor
                         <Badge variant="outline">{t("archivedBadge")}</Badge>
                       ) : null}
                     </div>
-                    <div className="w-32 shrink-0">
-                      <NumberInput
+                    <div className="shrink-0">
+                      <PortionAmountInput
                         id={`dish-quantity-${index}`}
-                        name="componentQuantityG"
-                        unit={t("units.g")}
-                        aria-label={t("composite.quantity", { name: rowName })}
-                        value={row.quantity}
-                        onChange={(value) => updateRowQuantity(index, value)}
-                        aria-invalid={rowError ? true : undefined}
-                        aria-describedby={rowError ? `dish-quantity-${index}-error` : undefined}
+                        amountName="componentAmount"
+                        portionIdName="componentPortionId"
+                        portions={unitOptions(row.foodId)}
+                        portionId={row.portionId}
+                        onPortionIdChange={(portionId) => updateRow(index, { portionId })}
+                        amount={row.amount}
+                        onAmountChange={(amount) => updateRow(index, { amount })}
+                        gramsLabel={t("units.g")}
+                        unitLabel={t("fields.unit")}
+                        amountLabel={t("composite.quantity", { name: rowName })}
+                        computedGramsText={
+                          grams !== null ? t("computedGrams", { grams: formatOneDecimal(grams) }) : undefined
+                        }
+                        invalid={!!rowError}
+                        describedBy={rowError ? `dish-quantity-${index}-error` : undefined}
                       />
                     </div>
                     <Button
@@ -298,6 +367,14 @@ function CompositeFoodForm({ food, foods, components, onDone }: CompositeFoodFor
           </p>
         ) : null}
       </section>
+
+      <PortionsEditor
+        idPrefix="dish"
+        rows={portionRows}
+        onChange={setPortionRows}
+        rowError={(i) => fieldError(`portion.${i}`)}
+        listError={fieldError("portions")}
+      />
 
       <FormField
         id="dish-finalWeightG"

@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Apple, CookingPot, FileJson, Plus } from "lucide-react";
 import { toast } from "sonner";
-import type { Food, FoodComponent } from "@/server/dal/foods";
+import type { Food, FoodComponent, FoodPortion } from "@/server/dal/foods";
 import { restoreFoodAction } from "@/features/foods/actions";
 import { matchesQuery } from "@/lib/search";
 import { EmptyState } from "@/components/layout/EmptyState";
@@ -21,9 +21,9 @@ import { ConfirmFoodDialog, type FoodConfirmIntent } from "./ConfirmFoodDialog";
 // D5: Polish collation for sorting by name.
 const collator = new Intl.Collator("pl", { sensitivity: "base" });
 
-type FoodsViewProps = { foods: Food[]; components: FoodComponent[] };
+type FoodsViewProps = { foods: Food[]; components: FoodComponent[]; portions: FoodPortion[] };
 
-export function FoodsView({ foods, components }: FoodsViewProps) {
+export function FoodsView({ foods, components, portions }: FoodsViewProps) {
   const t = useTranslations("foods");
   const [query, setQuery] = useState("");
   const [showArchived, setShowArchived] = useState(false);
@@ -60,6 +60,16 @@ export function FoodsView({ foods, components }: FoodsViewProps) {
   }, [components]);
 
   const foodsById = useMemo(() => new Map(foods.map((f) => [f.id, f])), [foods]);
+
+  const portionsByFood = useMemo(() => {
+    const map = new Map<number, FoodPortion[]>();
+    for (const p of portions) {
+      const list = map.get(p.foodId);
+      if (list) list.push(p);
+      else map.set(p.foodId, [p]);
+    }
+    return map;
+  }, [portions]);
 
   const openAdd = () => {
     setDialogFood(null);
@@ -151,7 +161,12 @@ export function FoodsView({ foods, components }: FoodsViewProps) {
         />
       )}
 
-      <FoodFormDialog open={dialogOpen} onOpenChange={setDialogOpen} food={dialogFood} />
+      <FoodFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        food={dialogFood}
+        portions={dialogFood ? (portionsByFood.get(dialogFood.id) ?? []) : []}
+      />
       <FoodImportDialog open={importOpen} onOpenChange={setImportOpen} />
       <CompositeFoodDialog
         open={compositeOpen}
@@ -159,6 +174,7 @@ export function FoodsView({ foods, components }: FoodsViewProps) {
         food={compositeFood}
         foods={foods}
         components={components}
+        portions={portions}
       />
       <ConfirmFoodDialog
         target={confirmTarget}

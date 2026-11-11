@@ -15,6 +15,7 @@
 **`forms/`**:
 - `FormField({ id, label, hint?, error?, children })`: label, hint and error wrapper around one input.
 - `NumberInput({ value, onChange, unit?, ...input })`: text input with decimal `inputMode`. Accepts comma decimals.
+- `PortionAmountInput({ id, amountName, portionIdName, portions, portionId, onPortionIdChange, amount, onAmountChange, gramsLabel, unitLabel, ... })`: amount input plus a unit select (grams first, then the food's portions). A hidden field carries the portion id. With no portions it renders grams only. Labels come in pre-formatted.
 - `SubmitButton({ children, pendingLabel })`: submit button that uses `useFormStatus` to show `pendingLabel` while pending.
 - `field-styles.ts`: `fieldControlClass` (`h-9`, opaque `bg-white`). Apply it to every input and select trigger on the notebook sheet.
 

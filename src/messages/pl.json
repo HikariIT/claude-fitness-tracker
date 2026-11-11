@@ -110,7 +110,8 @@
       "kcal": "Energia",
       "proteinG": "Białko",
       "carbsG": "Węglowodany",
-      "fatG": "Tłuszcz"
+      "fatG": "Tłuszcz",
+      "unit": "Jednostka"
     },
     "units": {
       "kcal": "kcal",
@@ -189,6 +190,18 @@
         "nameDuplicate": "Ta nazwa występuje w pliku więcej niż raz."
       }
     },
+    "portions": {
+      "title": "Porcje",
+      "hint": "Nazwane miary, np. Łyżka = 15 g.",
+      "name": "Nazwa porcji",
+      "grams": "Waga porcji",
+      "add": "Dodaj porcję",
+      "remove": "Usuń porcję",
+      "defaultName": "Porcja"
+    },
+    "portionOption": "{name} ({grams} g)",
+    "computedGrams": "= {grams} g",
+    "portionQuantity": "{count} × {name} ({grams} g)",
     "macros": {
       "hint": "≈ {kcal} kcal z makroskładników",
       "use": "Użyj"
@@ -235,6 +248,15 @@
       "componentQuantityRange": "Podaj ilość od 0,1 do 5000 g.",
       "componentUnavailable": "Jeden ze składników jest niedostępny. Usuń go i spróbuj ponownie.",
       "componentCycle": "Danie nie może zawierać samego siebie, ani bezpośrednio, ani przez inne danie.",
+      "portionsTooMany": "Maksymalnie 10 porcji.",
+      "portionsInvalid": "Lista porcji jest nieprawidłowa.",
+      "portionNameRequired": "Podaj nazwę porcji.",
+      "portionNameTooLong": "Nazwa porcji może mieć do 30 znaków.",
+      "portionGramsRange": "Waga porcji musi wynosić 0,1–5000 g.",
+      "portionDuplicate": "Ta nazwa porcji już istnieje.",
+      "componentPortionCountRange": "Ilość musi wynosić 0,1–100 porcji.",
+      "componentPortionUnavailable": "Ta porcja już nie istnieje. Wybierz jednostkę ponownie.",
+      "componentGramsRange": "Waga składnika musi wynosić 0,1–5000 g.",
       "finalWeightRange": "Podaj wagę od 1 do 20000 g.",
       "finalWeightTooLow": "Waga końcowa jest za mała dla tych składników."
     }
@@ -275,7 +297,8 @@
     "fields": {
       "meal": "Posiłek",
       "food": "Produkt",
-      "quantityG": "Ilość"
+      "amount": "Ilość",
+      "unit": "Jednostka"
     },
     "search": {
       "label": "Szukaj produktów",
@@ -331,7 +354,9 @@
       "mealInvalid": "Wybierz posiłek.",
       "foodRequired": "Wybierz produkt.",
       "foodUnavailable": "Ten produkt nie jest już dostępny.",
-      "quantityRange": "Podaj od 0,1 do 5000 g."
+      "quantityRange": "Podaj od 0,1 do 5000 g.",
+      "portionUnavailable": "Ta porcja już nie istnieje. Wybierz jednostkę ponownie.",
+      "portionCountRange": "Ilość musi wynosić 0,1–100 porcji."
     },
     "toast": {
       "created": "Dodano wpis.",
@@ -341,7 +366,10 @@
     },
     "list": {
       "title": "Lista posiłków"
-    }
+    },
+    "portionOption": "{name} ({grams} g)",
+    "computedGrams": "= {grams} g",
+    "portionQuantity": "{count} × {name} ({grams} g)"
   },
   "workouts": {
     "types": {

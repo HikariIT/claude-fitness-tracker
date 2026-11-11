@@ -31,7 +31,40 @@ describe("parseFoodForm", () => {
       ),
     ).toEqual({
       ok: true,
-      data: { name: "Ryż gotowany", kcal: 130, proteinG: 2.7, carbsG: 28.2, fatG: 0.3 },
+      data: { name: "Ryż gotowany", kcal: 130, proteinG: 2.7, carbsG: 28.2, fatG: 0.3, portions: [] },
+    });
+  });
+
+  it("parses two portion rows next to the food fields", () => {
+    const data = form();
+    data.append("portionName", "Łyżka");
+    data.append("portionGrams", "15");
+    data.append("portionName", "Łyżeczka");
+    data.append("portionGrams", "5,5");
+    expect(parseFoodForm(data)).toEqual({
+      ok: true,
+      data: {
+        name: "Ryż",
+        kcal: 130,
+        proteinG: 2.7,
+        carbsG: 28.2,
+        fatG: 0.3,
+        portions: [
+          { name: "Łyżka", grams: 15 },
+          { name: "Łyżeczka", grams: 5.5 },
+        ],
+      },
+    });
+  });
+
+  it("reports a food field error and a portion row error together", () => {
+    const data = form({ kcal: "abc" });
+    data.append("portionName", "");
+    data.append("portionGrams", "15");
+    const result = parseFoodForm(data);
+    expect(result).toEqual({
+      ok: false,
+      fieldErrors: { kcal: "kcalRange", "portion.0": "portionNameRequired" },
     });
   });
 

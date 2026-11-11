@@ -3,12 +3,13 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import type { Food } from "@/server/dal/foods";
+import type { Food, FoodPortion } from "@/server/dal/foods";
 import { saveFood, type FoodFormState } from "@/features/foods/actions";
 import { kcalFromMacros } from "@/lib/nutrition";
 import { parseDecimal } from "@/lib/numbers";
-import type { FoodErrorField } from "@/lib/validation/foods";
+import type { FoodFormErrorField } from "@/lib/validation/foods";
 import { FormField } from "@/components/forms/FormField";
+import { PortionsEditor, type PortionRow } from "./PortionsEditor";
 import { NumberInput } from "@/components/forms/NumberInput";
 import { SubmitButton } from "@/components/forms/SubmitButton";
 import { fieldControlClass } from "@/components/forms/field-styles";
@@ -28,9 +29,10 @@ type FoodFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   food: Food | null; // null = add, otherwise edit this food
+  portions: FoodPortion[]; // this food's portions only, in sortOrder
 };
 
-export function FoodFormDialog({ open, onOpenChange, food }: FoodFormDialogProps) {
+export function FoodFormDialog({ open, onOpenChange, food, portions }: FoodFormDialogProps) {
   const t = useTranslations("foods");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -41,16 +43,16 @@ export function FoodFormDialog({ open, onOpenChange, food }: FoodFormDialogProps
           </DialogTitle>
           <DialogDescription>{t("dialog.description")}</DialogDescription>
         </DialogHeader>
-        <FoodForm food={food} onDone={() => onOpenChange(false)} />
+        <FoodForm food={food} portions={portions} onDone={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );
 }
 
-type FoodFormProps = { food: Food | null; onDone: () => void };
+type FoodFormProps = { food: Food | null; portions: FoodPortion[]; onDone: () => void };
 
 /** Mounted inside the dialog content, so its state resets each time the dialog opens. */
-function FoodForm({ food, onDone }: FoodFormProps) {
+function FoodForm({ food, portions, onDone }: FoodFormProps) {
   const t = useTranslations("foods");
   const [state, formAction] = useActionState(saveFood, null);
 
@@ -59,6 +61,9 @@ function FoodForm({ food, onDone }: FoodFormProps) {
   const [proteinG, setProteinG] = useState<string>(food ? String(food.proteinG) : "");
   const [carbsG, setCarbsG] = useState<string>(food ? String(food.carbsG) : "");
   const [fatG, setFatG] = useState<string>(food ? String(food.fatG) : "");
+  const [portionRows, setPortionRows] = useState<PortionRow[]>(() =>
+    portions.map((p, i) => ({ key: i, name: p.name, grams: String(p.grams) })),
+  );
 
   // Live "≈ kcal from macros" hint (D8). Shown only when all three macros parse.
   const protein = parseDecimal(proteinG);
@@ -82,7 +87,7 @@ function FoodForm({ food, onDone }: FoodFormProps) {
     }
   }, [state, t, onDone]);
 
-  const fieldError = (field: FoodErrorField): string | undefined => {
+  const fieldError = (field: FoodFormErrorField): string | undefined => {
     const code = state && !state.ok ? state.fieldErrors?.[field] : undefined;
     return code ? t(`errors.${code}`) : undefined;
   };
@@ -182,7 +187,15 @@ function FoodForm({ food, onDone }: FoodFormProps) {
         </p>
       ) : null}
 
-      {food ? <p className="text-sm text-muted-foreground">{t("dialog.editHint")}</p> : null}
+      <PortionsEditor
+        idPrefix="food"
+        rows={portionRows}
+        onChange={setPortionRows}
+        rowError={(i) => fieldError(`portion.${i}`)}
+        listError={fieldError("portions")}
+      />
+
+      {food ?<p className="text-sm text-muted-foreground">{t("dialog.editHint")}</p> : null}
 
       <DialogFooter className="pt-2">
         <DialogClose asChild>

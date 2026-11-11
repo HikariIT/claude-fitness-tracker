@@ -6,6 +6,7 @@ import {
   parseFoodForm,
   parseFoodId,
   type FoodErrorCode,
+  type FoodFormErrorCode,
 } from "@/lib/validation/foods";
 import {
   parseCompositeFoodForm,
@@ -28,7 +29,7 @@ import {
 } from "@/server/services/foods";
 
 export type FoodFormState =
-  | ActionResult<{ savedAt: number; mode: "created" | "updated" }, FoodErrorCode>
+  | ActionResult<{ savedAt: number; mode: "created" | "updated" }, FoodFormErrorCode>
   | null;
 export type CompositeFoodFormState =
   | ActionResult<{ savedAt: number; mode: "created" | "updated" }, CompositeFoodErrorCode>
@@ -98,11 +99,15 @@ export async function saveCompositeFood(
       if (result.reason === "nameTaken") {
         return { ok: false, code: "validation", fieldErrors: { name: "nameTaken" } };
       }
-      if (result.reason === "componentUnavailable") {
+      if (
+        result.reason === "componentUnavailable" ||
+        result.reason === "componentPortionUnavailable" ||
+        result.reason === "componentGramsRange"
+      ) {
         return {
           ok: false,
           code: "validation",
-          fieldErrors: { components: "componentUnavailable" },
+          fieldErrors: { components: result.reason },
         };
       }
       if (result.reason === "componentCycle") {

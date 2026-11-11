@@ -1,4 +1,4 @@
-import { boolean, check, index, integer, numeric, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
+import { boolean, check, index, integer, numeric, pgTable, text, timestamp, unique, uniqueIndex } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { timestamps } from "./shared";
 
@@ -26,7 +26,27 @@ export const foods = pgTable(
   ],
 );
 
+// Named portion sizes of a food (D1), e.g. "Tablespoon" = 15 g. Order = sortOrder (form row order).
+export const foodPortions = pgTable(
+  "food_portions",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    foodId: integer()
+      .notNull()
+      .references(() => foods.id, { onDelete: "cascade" }),
+    name: text().notNull(),
+    grams: numeric({ precision: 7, scale: 1, mode: "number" }).notNull(),
+    sortOrder: integer().notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex("food_portions_food_name_unique").on(t.foodId, sql`lower(${t.name})`),
+    check("food_portions_grams_positive", sql`${t.grams} > 0`),
+  ],
+);
+
 // Ingredients of a dish (foods.isComposite = true). quantityG = grams of the component in the whole dish.
+// Portion columns are a snapshot of the unit the user picked (D5); null = entered in grams.
 export const foodComponents = pgTable(
   "food_components",
   {
@@ -38,6 +58,9 @@ export const foodComponents = pgTable(
       .notNull()
       .references(() => foods.id, { onDelete: "restrict" }), // D5
     quantityG: numeric({ precision: 7, scale: 1, mode: "number" }).notNull(),
+    portionName: text(),
+    portionG: numeric({ precision: 7, scale: 1, mode: "number" }),
+    portionCount: numeric({ precision: 5, scale: 1, mode: "number" }),
     ...timestamps,
   },
   (t) => [
@@ -45,5 +68,9 @@ export const foodComponents = pgTable(
     index("food_components_component_food_id_idx").on(t.componentFoodId),
     check("food_components_quantity_positive", sql`${t.quantityG} > 0`),
     check("food_components_not_self", sql`${t.foodId} <> ${t.componentFoodId}`),
+    check(
+      "food_components_portion_all_or_none",
+      sql`(${t.portionName} IS NULL AND ${t.portionG} IS NULL AND ${t.portionCount} IS NULL) OR (${t.portionName} IS NOT NULL AND ${t.portionG} IS NOT NULL AND ${t.portionCount} IS NOT NULL)`,
+    ),
   ],
 );

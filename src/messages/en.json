@@ -110,7 +110,8 @@
       "kcal": "Energy",
       "proteinG": "Protein",
       "carbsG": "Carbohydrates",
-      "fatG": "Fat"
+      "fatG": "Fat",
+      "unit": "Unit"
     },
     "units": {
       "kcal": "kcal",
@@ -189,6 +190,18 @@
         "nameDuplicate": "This name appears more than once in the file."
       }
     },
+    "portions": {
+      "title": "Portions",
+      "hint": "Named sizes, e.g. Tablespoon = 15 g.",
+      "name": "Portion name",
+      "grams": "Portion weight",
+      "add": "Add portion",
+      "remove": "Remove portion",
+      "defaultName": "Portion"
+    },
+    "portionOption": "{name} ({grams} g)",
+    "computedGrams": "= {grams} g",
+    "portionQuantity": "{count} × {name} ({grams} g)",
     "macros": {
       "hint": "≈ {kcal} kcal from macros",
       "use": "Use"
@@ -235,6 +248,15 @@
       "componentQuantityRange": "Enter an amount from 0.1 to 5000 g.",
       "componentUnavailable": "An ingredient is no longer available. Remove it and try again.",
       "componentCycle": "A dish can’t contain itself, directly or through another dish.",
+      "portionsTooMany": "Up to 10 portions.",
+      "portionsInvalid": "Portion list is invalid.",
+      "portionNameRequired": "Enter a portion name.",
+      "portionNameTooLong": "Portion name can have up to 30 characters.",
+      "portionGramsRange": "Portion weight must be 0.1–5000 g.",
+      "portionDuplicate": "This portion name is already used.",
+      "componentPortionCountRange": "Amount must be 0.1–100 portions.",
+      "componentPortionUnavailable": "This portion no longer exists. Pick the unit again.",
+      "componentGramsRange": "An ingredient’s weight must be 0.1–5000 g.",
       "finalWeightRange": "Enter a weight from 1 to 20000 g.",
       "finalWeightTooLow": "The final weight is too low for these ingredients."
     }
@@ -275,7 +297,8 @@
     "fields": {
       "meal": "Meal",
       "food": "Food",
-      "quantityG": "Amount"
+      "amount": "Amount",
+      "unit": "Unit"
     },
     "search": {
       "label": "Search foods",
@@ -331,7 +354,9 @@
       "mealInvalid": "Pick a meal.",
       "foodRequired": "Pick a food.",
       "foodUnavailable": "This food is no longer available.",
-      "quantityRange": "Enter 0.1–5000 g."
+      "quantityRange": "Enter 0.1–5000 g.",
+      "portionUnavailable": "This portion no longer exists. Pick the unit again.",
+      "portionCountRange": "Amount must be 0.1–100 portions."
     },
     "toast": {
       "created": "Entry added.",
@@ -341,7 +366,10 @@
     },
     "list": {
       "title": "List of meals"
-    }
+    },
+    "portionOption": "{name} ({grams} g)",
+    "computedGrams": "= {grams} g",
+    "portionQuantity": "{count} × {name} ({grams} g)"
   },
   "workouts": {
     "types": {

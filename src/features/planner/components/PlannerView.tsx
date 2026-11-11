@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Utensils } from "lucide-react";
-import type { Food } from "@/server/dal/foods";
+import type { Food, FoodPortion } from "@/server/dal/foods";
 import type { DiaryEntry } from "@/server/dal/diary";
 import { defaultMeal, sumNutrition } from "@/lib/diary";
 import { DatePager } from "@/components/data/DatePager";
@@ -18,10 +18,11 @@ type PlannerViewProps = {
   date: string; // YYYY-MM-DD
   entries: DiaryEntry[]; // ascending id (D13)
   foods: Food[]; // all foods incl. archived
+  portions: FoodPortion[]; // every food's portions, sortOrder within a food
   goals: DayGoals;
 };
 
-export function PlannerView({ date, entries, foods, goals }: PlannerViewProps) {
+export function PlannerView({ date, entries, foods, portions, goals }: PlannerViewProps) {
   const t = useTranslations("planner");
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<DiaryEntry | null>(null);
@@ -71,6 +72,7 @@ export function PlannerView({ date, entries, foods, goals }: PlannerViewProps) {
         onOpenChange={setFormOpen}
         date={date}
         foods={foods}
+        portions={portions}
         entry={editing}
         defaultMeal={defaultMeal(entries)}
       />

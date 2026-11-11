@@ -1,4 +1,5 @@
 import { parseDecimal } from "@/lib/numbers";
+import { parsePortionsForm, type PortionErrorCode, type PortionErrorField, type PortionInput } from "@/lib/validation/portions";
 
 export const FOOD_FIELDS = ["name", "kcal", "proteinG", "carbsG", "fatG"] as const;
 export type FoodField = (typeof FOOD_FIELDS)[number];
@@ -28,6 +29,13 @@ export type FoodParseResult =
   | { ok: true; data: FoodInput }
   | { ok: false; fieldErrors: Partial<Record<FoodErrorField, FoodErrorCode>> };
 
+export type FoodFormInput = FoodInput & { portions: PortionInput[] };
+export type FoodFormErrorCode = FoodErrorCode | PortionErrorCode;
+export type FoodFormErrorField = FoodErrorField | PortionErrorField;
+export type FoodFormParseResult =
+  | { ok: true; data: FoodFormInput }
+  | { ok: false; fieldErrors: Partial<Record<FoodFormErrorField, FoodFormErrorCode>> };
+
 function readField(formData: FormData, name: FoodField): string {
   const value = formData.get(name);
   return typeof value === "string" ? value.trim() : "";
@@ -37,15 +45,30 @@ function inRange(value: number | null, min: number, max: number): value is numbe
   return value !== null && value >= min && value <= max;
 }
 
-/** Reads the 5 fields from FormData and validates them per D6. Never produces "nameTaken" (the service does). */
-export function parseFoodForm(formData: FormData): FoodParseResult {
-  return validateFoodFields({
+/**
+ * Reads the 5 fields and the portion rows from FormData and validates them per D6 and D12.
+ * Never produces "nameTaken" (the service does).
+ */
+export function parseFoodForm(formData: FormData): FoodFormParseResult {
+  const base = validateFoodFields({
     name: readField(formData, "name"),
     kcal: readField(formData, "kcal"),
     proteinG: readField(formData, "proteinG"),
     carbsG: readField(formData, "carbsG"),
     fatG: readField(formData, "fatG"),
   });
+  const portions = parsePortionsForm(formData);
+
+  if (base.ok && portions.ok) {
+    return { ok: true, data: { ...base.data, portions: portions.data } };
+  }
+  return {
+    ok: false,
+    fieldErrors: {
+      ...(base.ok ? {} : base.fieldErrors),
+      ...(portions.ok ? {} : portions.fieldErrors),
+    },
+  };
 }
 
 /** Same name normalization as the form: trimmed, inner whitespace collapsed to one space. */

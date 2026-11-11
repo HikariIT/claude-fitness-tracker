@@ -1,0 +1,7 @@
+[FIT-16]: Portion Sizes
+
+- Add `food_portions` table, portion snapshot columns and checks on `food_components` and `diary_entries`, migration 0003, `listFoodPortions()` read, and docs
+- Add portion helpers (`lib/portions.ts`), the portion row validator (`lib/validation/portions.ts`) with tests, and the shared `PortionAmountInput` component, plus docs
+- Save food and dish portions with snapshot-aware dish ingredients (`parseFoodForm`/`parseCompositeFoodForm` read portion rows and units, `createFood`/`updateFood`/`createCompositeFood`/`updateCompositeFood` replace portions and store ingredient snapshots, new `foods.errors.*` messages in en and pl)
+- Add portion units to planner entries: `diary.ts` validator reads `portionId`/`amount`, services resolve portion snapshots in a transaction, `EntryFormDialog` uses `PortionAmountInput` with computed grams, entries table shows "count × name (g)", planner messages in en and pl (`fields.quantityG` removed)
+- Add the foods "Portions" editor (`PortionsEditor`) to the food and dish dialogs, ingredient unit picker (`PortionAmountInput`) in the dish dialog, portion list under food names and "count × name (g)" ingredient rows in the foods table, `foods.portions.*` / `portionOption` / `computedGrams` / `portionQuantity` / `fields.unit` messages in en and pl, and feature and server docs

@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { diaryEntries } from "./diary";
-import { foodComponents, foods } from "./foods";
+import { foodComponents, foodPortions, foods } from "./foods";
 import { exercises, treadmillSessions, workoutSets, workouts } from "./workouts";
 
 export * from "./enums";
@@ -13,6 +13,11 @@ export const foodsRelations = relations(foods, ({ many }) => ({
   diaryEntries: many(diaryEntries),
   components: many(foodComponents, { relationName: "composite" }), // ingredients of this dish
   usedIn: many(foodComponents, { relationName: "component" }), // rows where this food is an ingredient
+  portions: many(foodPortions),
+}));
+
+export const foodPortionsRelations = relations(foodPortions, ({ one }) => ({
+  food: one(foods, { fields: [foodPortions.foodId], references: [foods.id] }),
 }));
 
 export const foodComponentsRelations = relations(foodComponents, ({ one }) => ({

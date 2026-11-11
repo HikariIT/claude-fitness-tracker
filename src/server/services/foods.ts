@@ -1,10 +1,18 @@
 import "server-only";
 import { and, eq, inArray, isNotNull, isNull, ne, sql } from "drizzle-orm";
 import { db } from "@/db/client";
-import { diaryEntries, foodComponents, foods } from "@/db/schema";
+import { diaryEntries, foodComponents, foodPortions, foods } from "@/db/schema";
 import { compositeNutrition, dependentsInOrder, wouldCreateCycle } from "@/lib/composite";
-import type { CompositeFoodInput } from "@/lib/validation/composite-foods";
-import type { FoodInput } from "@/lib/validation/foods";
+import {
+  NO_PORTION_SNAPSHOT,
+  portionGrams,
+  QUANTITY_G_MAX,
+  QUANTITY_G_MIN,
+  type PortionSnapshot,
+} from "@/lib/portions";
+import type { CompositeComponentInput, CompositeFoodInput } from "@/lib/validation/composite-foods";
+import type { FoodFormInput, FoodInput } from "@/lib/validation/foods";
+import type { PortionInput } from "@/lib/validation/portions";
 import type { Food } from "@/server/dal/foods";
 
 export type FoodWriteResult =
@@ -17,10 +25,84 @@ export type CompositeWriteResult =
   | { ok: true; food: Food }
   | {
       ok: false;
-      reason: "nameTaken" | "notFound" | "componentUnavailable" | "componentCycle" | "finalWeightTooLow";
+      reason:
+        | "nameTaken"
+        | "notFound"
+        | "componentUnavailable"
+        | "componentCycle"
+        | "finalWeightTooLow"
+        | "componentPortionUnavailable"
+        | "componentGramsRange";
     };
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+type ResolvedComponent = { foodId: number; quantityG: number } & PortionSnapshot;
+
+/** D1: replaces all portions of a food, keeping the submitted order as sortOrder. */
+async function replacePortions(tx: Tx, foodId: number, portions: PortionInput[]): Promise<void> {
+  await tx.delete(foodPortions).where(eq(foodPortions.foodId, foodId));
+  if (portions.length > 0) {
+    await tx.insert(foodPortions).values(
+      portions.map((portion, index) => ({
+        foodId,
+        name: portion.name,
+        grams: portion.grams,
+        sortOrder: index,
+      })),
+    );
+  }
+}
+
+/**
+ * Turns each ingredient into grams. A portion amount is count × the portion's grams, with a snapshot
+ * of the unit (D5). The portion must exist and belong to the ingredient food.
+ */
+async function resolveComponents(
+  tx: Tx,
+  components: CompositeComponentInput[],
+): Promise<
+  | { ok: true; rows: ResolvedComponent[] }
+  | { ok: false; reason: "componentPortionUnavailable" | "componentGramsRange" }
+> {
+  const portionIds = components.flatMap((component) =>
+    component.amount.kind === "portion" ? [component.amount.portionId] : [],
+  );
+  const portionRows =
+    portionIds.length === 0
+      ? []
+      : await tx.select().from(foodPortions).where(inArray(foodPortions.id, portionIds));
+  const portionById = new Map(portionRows.map((portion) => [portion.id, portion]));
+
+  const rows: ResolvedComponent[] = [];
+  for (const component of components) {
+    if (component.amount.kind === "grams") {
+      rows.push({
+        foodId: component.foodId,
+        quantityG: component.amount.quantityG,
+        ...NO_PORTION_SNAPSHOT,
+      });
+      continue;
+    }
+    const { portionId, count } = component.amount;
+    const portion = portionById.get(portionId);
+    if (!portion || portion.foodId !== component.foodId) {
+      return { ok: false, reason: "componentPortionUnavailable" };
+    }
+    const quantityG = portionGrams(count, portion.grams);
+    if (quantityG < QUANTITY_G_MIN || quantityG > QUANTITY_G_MAX) {
+      return { ok: false, reason: "componentGramsRange" };
+    }
+    rows.push({
+      foodId: component.foodId,
+      quantityG,
+      portionName: portion.name,
+      portionG: portion.grams,
+      portionCount: count,
+    });
+  }
+  return { ok: true, rows };
+}
 
 /** True when a non-archived food already has this name (case-insensitive). */
 async function isNameTaken(tx: Tx, name: string, excludeId?: number): Promise<boolean> {
@@ -100,12 +182,14 @@ async function recomputeDependents(tx: Tx, changedId: number): Promise<void> {
   }
 }
 
-export async function createFood(input: FoodInput): Promise<FoodWriteResult> {
+export async function createFood(input: FoodFormInput): Promise<FoodWriteResult> {
+  const { portions, ...values } = input;
   return db.transaction(async (tx) => {
-    if (await isNameTaken(tx, input.name)) {
+    if (await isNameTaken(tx, values.name)) {
       return { ok: false, reason: "nameTaken" };
     }
-    const [food] = await tx.insert(foods).values(input).returning();
+    const [food] = await tx.insert(foods).values(values).returning();
+    await replacePortions(tx, food.id, portions);
     return { ok: true, food };
   });
 }
@@ -141,17 +225,19 @@ export async function importFoods(inputs: FoodInput[]): Promise<FoodImportWriteR
  * (D7: diary snapshots are not touched; D8: a dish is never edited as a plain food).
  * Recalculates every dish that uses the food (D4).
  */
-export async function updateFood(id: number, input: FoodInput): Promise<FoodWriteResult> {
+export async function updateFood(id: number, input: FoodFormInput): Promise<FoodWriteResult> {
+  const { portions, ...values } = input;
   return db.transaction(async (tx) => {
-    if (await isNameTaken(tx, input.name, id)) {
+    if (await isNameTaken(tx, values.name, id)) {
       return { ok: false, reason: "nameTaken" };
     }
     const [food] = await tx
       .update(foods)
-      .set({ ...input, updatedAt: new Date() })
+      .set({ ...values, updatedAt: new Date() })
       .where(and(eq(foods.id, id), isNull(foods.archivedAt), eq(foods.isComposite, false)))
       .returning();
     if (!food) return { ok: false, reason: "notFound" };
+    await replacePortions(tx, id, portions);
     await recomputeDependents(tx, id);
     return { ok: true, food };
   });
@@ -173,11 +259,14 @@ export async function createCompositeFood(input: CompositeFoodInput): Promise<Co
       return { ok: false, reason: "componentUnavailable" };
     }
 
+    const resolved = await resolveComponents(tx, input.components);
+    if (!resolved.ok) return resolved;
+
     const byId = new Map(rows.map((row) => [row.id, row]));
     const values = compositeNutrition(
-      input.components.map((component) => ({
-        ...(byId.get(component.foodId) as (typeof rows)[number]),
-        quantityG: component.quantityG,
+      resolved.rows.map((row) => ({
+        ...(byId.get(row.foodId) as (typeof rows)[number]),
+        quantityG: row.quantityG,
       })),
       input.finalWeightG,
     );
@@ -195,12 +284,16 @@ export async function createCompositeFood(input: CompositeFoodInput): Promise<Co
       })
       .returning();
     await tx.insert(foodComponents).values(
-      input.components.map((component) => ({
+      resolved.rows.map((row) => ({
         foodId: food.id,
-        componentFoodId: component.foodId,
-        quantityG: component.quantityG,
+        componentFoodId: row.foodId,
+        quantityG: row.quantityG,
+        portionName: row.portionName,
+        portionG: row.portionG,
+        portionCount: row.portionCount,
       })),
     );
+    await replacePortions(tx, food.id, input.portions);
     return { ok: true, food };
   });
 }
@@ -254,11 +347,14 @@ export async function updateCompositeFood(
       return { ok: false, reason: "componentCycle" };
     }
 
+    const resolved = await resolveComponents(tx, input.components);
+    if (!resolved.ok) return resolved;
+
     const byId = new Map(rows.map((row) => [row.id, row]));
     const values = compositeNutrition(
-      input.components.map((component) => ({
-        ...(byId.get(component.foodId) as (typeof rows)[number]),
-        quantityG: component.quantityG,
+      resolved.rows.map((row) => ({
+        ...(byId.get(row.foodId) as (typeof rows)[number]),
+        quantityG: row.quantityG,
       })),
       input.finalWeightG,
     );
@@ -278,12 +374,16 @@ export async function updateCompositeFood(
       .returning();
     await tx.delete(foodComponents).where(eq(foodComponents.foodId, id));
     await tx.insert(foodComponents).values(
-      input.components.map((component) => ({
+      resolved.rows.map((row) => ({
         foodId: id,
-        componentFoodId: component.foodId,
-        quantityG: component.quantityG,
+        componentFoodId: row.foodId,
+        quantityG: row.quantityG,
+        portionName: row.portionName,
+        portionG: row.portionG,
+        portionCount: row.portionCount,
       })),
     );
+    await replacePortions(tx, id, input.portions);
     await recomputeDependents(tx, id);
     return { ok: true, food };
   });

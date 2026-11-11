@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { isIsoDate, localIsoDate } from "@/lib/dates";
 import { getDiaryDay } from "@/server/dal/diary";
-import { listFoods } from "@/server/dal/foods";
+import { listFoodPortions, listFoods } from "@/server/dal/foods";
 import { getSettings } from "@/server/dal/settings";
 import { PlannerView } from "./PlannerView";
 
@@ -12,9 +12,10 @@ export async function PlannerSection({ dateParam }: { dateParam?: Promise<string
   const date = dateParam ? await dateParam : localIsoDate(new Date());
   if (!isIsoDate(date)) notFound(); // D2
 
-  const [entries, foods, settings] = await Promise.all([
+  const [entries, foods, portions, settings] = await Promise.all([
     getDiaryDay(date),
     listFoods(),
+    listFoodPortions(),
     getSettings(),
   ]);
   return (
@@ -22,6 +23,7 @@ export async function PlannerSection({ dateParam }: { dateParam?: Promise<string
       date={date}
       entries={entries}
       foods={foods}
+      portions={portions}
       goals={settings ? { kcal: settings.kcalGoal, proteinG: settings.proteinGoalG } : null}
     />
   );

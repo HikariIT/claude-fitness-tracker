@@ -182,7 +182,13 @@ export function FoodsTable({
                       <TableRow key={c.id} className={rowClass}>
                         <TableCell className={`${cellClass} pl-8 text-muted-foreground`}>
                           <span className="inline-flex items-center gap-2">
-                            {`${ingredient?.name ?? "—"} · ${num(c.quantityG)} ${t("units.g")}`}
+                            {c.portionName !== null
+                              ? `${ingredient?.name ?? "—"} · ${t("portionQuantity", {
+                                  count: num(c.portionCount ?? 0),
+                                  name: c.portionName,
+                                  grams: num(c.quantityG),
+                                })}`
+                              : `${ingredient?.name ?? "—"} · ${num(c.quantityG)} ${t("units.g")}`}
                             {ingredientArchived ? (
                               <Badge variant="outline" className="bg-white">
                                 {t("archivedBadge")}

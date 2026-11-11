@@ -16,6 +16,8 @@ Isomorphic helpers with no side effects. Tests sit next to the code (`*.test.ts`
 - `validation/food-imports.ts`: `parseFoodImport(text)` for the JSON import (`{ foods: [...] }`, a bare array or one object; max 100 items and 100 000 chars; same rules as the form; duplicate names in the file give `nameDuplicate`). Returns `{ ok, data: FoodInput[] }` or `{ ok: false, errors }` with `index`/`name`/`field`/`code`. `foodImportErrorKey` / `parseFoodImportErrorKey` map errors to `ActionResult` keys (`file`, `<index>`, `<index>.<field>`). Runs on the client for the preview and again in the action.
 - `diary.ts`: `MEALS`, `isMeal`, `portionNutrition` (per-100 g to a grams snapshot), `sumNutrition`, `groupByMeal` (MEALS order, empty meals skipped), `defaultMeal`. `MEALS` must match `mealEnum`.
 - `validation/diary.ts`: `parseDiaryEntryForm` (fields `date`, `meal`, `foodId`, `quantityG`), `DIARY_ENTRY_ERROR_CODES`.
+- `portions.ts`: limits (`PORTION_MAX`, `PORTION_NAME_MAX`, `PORTION_GRAMS_MIN/MAX`, `PORTION_COUNT_MIN/MAX`, `QUANTITY_G_MIN/MAX`), `PortionAmount` (grams or portion count), `PortionSnapshot` / `NO_PORTION_SNAPSHOT`, `portionGrams` (count × grams, 0.1 g), `defaultPortion` (lowest sortOrder, D7), `findPortionByName` (trimmed, case-insensitive, reopens a saved unit).
+- `validation/portions.ts`: `parsePortionRows(names, grams)`, `parsePortionsForm(formData)` (repeated fields `portionName` / `portionGrams`), `PORTION_ERROR_CODES`. Row errors use the key `portion.<index>`, list-level errors use `portions`.
 - `utils.ts`: `cn()` (class merging).
 
 **Rules:**

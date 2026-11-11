@@ -44,6 +44,12 @@ export async function saveDiaryEntry(
       if (result.reason === "foodUnavailable") {
         return { ok: false, code: "validation", fieldErrors: { foodId: "foodUnavailable" } };
       }
+      if (result.reason === "portionUnavailable") {
+        return { ok: false, code: "validation", fieldErrors: { portionId: "portionUnavailable" } };
+      }
+      if (result.reason === "quantityRange") {
+        return { ok: false, code: "validation", fieldErrors: { amount: "quantityRange" } };
+      }
       return { ok: false, code: "unexpected" };
     }
     date = result.entry.date;

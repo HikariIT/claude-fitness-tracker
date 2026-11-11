@@ -8,7 +8,8 @@ Next.js App Router. Every route lives under `[locale]/` (`/pl/...`, `/en/...`). 
 - `[locale]/page.tsx`: redirects to `/planner`.
 - `[locale]/profile/page.tsx`: personal data form. Async `ProfileSection` in `<Suspense>` reads settings after `await connection()` (D8).
 - `[locale]/foods/page.tsx`: food database. Async `FoodsSection` in `<Suspense>`.
-- `[locale]/planner/page.tsx`: placeholder (food planner).
+- `[locale]/planner/page.tsx`: today's food planner, renders `PlannerSection` in `<Suspense>`.
+- `[locale]/planner/[date]/page.tsx`: any ISO day (invalid → 404). No `generateStaticParams`; `params` is awaited inside `<Suspense>` and passed to `PlannerSection`.
 - `[locale]/workouts/page.tsx`: placeholder (workout planner).
 - `[locale]/balance/page.tsx`: placeholder (total balance).
 - `[locale]/[...rest]/page.tsx`: catch-all, calls `notFound()`.

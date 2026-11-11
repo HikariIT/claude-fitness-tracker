@@ -3,12 +3,19 @@ import { useFormatter, useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { addDays, isoToUtcDate } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 
 type DatePagerProps = {
   date: string;
   basePath: "/planner" | "/workouts" | "/balance";
 };
 
+const arrowClass = cn(
+  buttonVariants({ variant: "ghost", size: "icon" }),
+  "text-steel-blue-300 hover:bg-icy-blue-800 hover:text-primary",
+);
+
+/** A card two ruled lines tall (h-18), the same surface as StatCard, so it sits on the notebook ruling. */
 export function DatePager({ date, basePath }: DatePagerProps) {
   const t = useTranslations("datePager");
   const format = useFormatter();
@@ -21,25 +28,20 @@ export function DatePager({ date, basePath }: DatePagerProps) {
   });
 
   return (
-    <nav aria-label={t("label")} className="flex items-center justify-between gap-2">
-      <Link
-        href={`${basePath}/${addDays(date, -1)}`}
-        aria-label={t("previous")}
-        className={buttonVariants({ variant: "ghost", size: "icon" })}
-      >
+    <nav
+      aria-label={t("label")}
+      className="flex h-18 items-center justify-between gap-2 rounded-xl border bg-platinum-900 px-3 shadow-sm"
+    >
+      <Link href={`${basePath}/${addDays(date, -1)}`} aria-label={t("previous")} className={arrowClass}>
         <ChevronLeft />
       </Link>
-      <div className="flex flex-1 flex-col items-center gap-1 text-center">
-        <p className="font-hand text-2xl leading-9 text-primary">{label}</p>
+      <div className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-x-4">
+        <p className="font-hand text-2xl leading-9 text-primary first-letter:uppercase">{label}</p>
         <Link href={basePath} className={buttonVariants({ variant: "outline", size: "sm" })}>
           {t("today")}
         </Link>
       </div>
-      <Link
-        href={`${basePath}/${addDays(date, 1)}`}
-        aria-label={t("next")}
-        className={buttonVariants({ variant: "ghost", size: "icon" })}
-      >
+      <Link href={`${basePath}/${addDays(date, 1)}`} aria-label={t("next")} className={arrowClass}>
         <ChevronRight />
       </Link>
     </nav>

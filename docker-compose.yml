@@ -5,6 +5,8 @@ services:
       - "3000:3000"
     env_file:
       - .env.production
+    environment:
+      TZ: Europe/Warsaw # "today" in the planner is the server's local date
     depends_on:
       db:
         condition: service_healthy

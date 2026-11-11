@@ -229,5 +229,98 @@
     "title": "Nie znaleziono strony",
     "description": "Ta kartka notatnika jest pusta.",
     "back": "Wróć do planu posiłków"
+  },
+  "planner": {
+    "meals": {
+      "breakfast": "Śniadanie",
+      "lunch": "Obiad",
+      "dinner": "Kolacja",
+      "snack": "Przekąska",
+      "other": "Inne"
+    },
+    "columns": {
+      "meal": "Posiłek",
+      "food": "Produkt",
+      "quantity": "Ilość",
+      "kcal": "Energia",
+      "proteinG": "Białko",
+      "carbsG": "Węglowodany",
+      "fatG": "Tłuszcz",
+      "actions": "Działania"
+    },
+    "units": {
+      "kcal": "kcal",
+      "g": "g"
+    },
+    "fields": {
+      "meal": "Posiłek",
+      "food": "Produkt",
+      "quantityG": "Ilość"
+    },
+    "search": {
+      "label": "Szukaj produktów",
+      "placeholder": "Szukaj po nazwie…",
+      "noMatches": "Brak pasujących produktów.",
+      "selected": "Wybrano: {name}",
+      "change": "Zmień"
+    },
+    "preview": "Ta porcja: {kcal} kcal · B {proteinG} g · W {carbsG} g · T {fatG} g",
+    "archivedBadge": "Usunięty",
+    "totals": {
+      "title": "Suma dnia",
+      "kcal": "Energia",
+      "proteinG": "Białko",
+      "carbsG": "Węglowodany",
+      "fatG": "Tłuszcz",
+      "goal": "{eaten} z {goal} kcal",
+      "remaining": "Pozostało {kcal} kcal",
+      "over": "{kcal} kcal ponad cel",
+      "noGoal": "Uzupełnij dane osobowe, aby zobaczyć swój cel kaloryczny.",
+      "noGoalLink": "Przejdź do danych osobowych",
+      "proteinGoal": "{eaten} z {goal} g",
+      "proteinRemaining": "brakuje {grams} g",
+      "proteinReached": "Cel osiągnięty",
+      "proteinNoGoal": "Brak celu białka.",
+      "setGoalLink": "Ustaw go w danych osobowych"
+    },
+    "empty": {
+      "title": "Brak posiłków",
+      "description": "Dodaj pierwszy wpis na ten dzień."
+    },
+    "actions": {
+      "add": "Dodaj wpis",
+      "edit": "Edytuj {name}",
+      "delete": "Usuń {name}",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saving": "Zapisywanie…",
+      "confirmDelete": "Usuń",
+      "deleting": "Usuwanie…"
+    },
+    "dialog": {
+      "addTitle": "Dodaj wpis",
+      "editTitle": "Edytuj wpis",
+      "description": "Wybierz produkt, ilość i posiłek."
+    },
+    "confirmDelete": {
+      "title": "Usunąć wpis?",
+      "description": "{name} ({grams} g) zostanie usunięty z tego dnia."
+    },
+    "errors": {
+      "dateInvalid": "Nieprawidłowa data.",
+      "mealInvalid": "Wybierz posiłek.",
+      "foodRequired": "Wybierz produkt.",
+      "foodUnavailable": "Ten produkt nie jest już dostępny.",
+      "quantityRange": "Podaj od 0,1 do 5000 g."
+    },
+    "toast": {
+      "created": "Dodano wpis.",
+      "updated": "Zapisano wpis.",
+      "deleted": "Usunięto wpis.",
+      "failed": "Coś poszło nie tak. Spróbuj ponownie."
+    },
+    "list": {
+      "title": "Lista posiłków"
+    }
   }
 }

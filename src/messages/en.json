@@ -229,5 +229,98 @@
     "title": "Page not found",
     "description": "This notebook page is empty.",
     "back": "Back to the meal planner"
+  },
+  "planner": {
+    "meals": {
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "snack": "Snack",
+      "other": "Other"
+    },
+    "columns": {
+      "meal": "Meal",
+      "food": "Food",
+      "quantity": "Amount",
+      "kcal": "Energy",
+      "proteinG": "Protein",
+      "carbsG": "Carbs",
+      "fatG": "Fat",
+      "actions": "Actions"
+    },
+    "units": {
+      "kcal": "kcal",
+      "g": "g"
+    },
+    "fields": {
+      "meal": "Meal",
+      "food": "Food",
+      "quantityG": "Amount"
+    },
+    "search": {
+      "label": "Search foods",
+      "placeholder": "Search by name…",
+      "noMatches": "No matching foods.",
+      "selected": "Selected: {name}",
+      "change": "Change"
+    },
+    "preview": "This portion: {kcal} kcal · P {proteinG} g · C {carbsG} g · F {fatG} g",
+    "archivedBadge": "Removed",
+    "totals": {
+      "title": "Day total",
+      "kcal": "Energy",
+      "proteinG": "Protein",
+      "carbsG": "Carbs",
+      "fatG": "Fat",
+      "goal": "{eaten} of {goal} kcal",
+      "remaining": "{kcal} kcal left",
+      "over": "{kcal} kcal over goal",
+      "noGoal": "Fill in your personal data to see your calorie goal.",
+      "noGoalLink": "Go to personal data",
+      "proteinGoal": "{eaten} of {goal} g",
+      "proteinRemaining": "{grams} g to go",
+      "proteinReached": "Goal reached",
+      "proteinNoGoal": "No protein goal set.",
+      "setGoalLink": "Set it in personal data"
+    },
+    "empty": {
+      "title": "No meals yet",
+      "description": "Add the first entry for this day."
+    },
+    "actions": {
+      "add": "Add entry",
+      "edit": "Edit {name}",
+      "delete": "Delete {name}",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…",
+      "confirmDelete": "Delete",
+      "deleting": "Deleting…"
+    },
+    "dialog": {
+      "addTitle": "Add entry",
+      "editTitle": "Edit entry",
+      "description": "Pick a food, amount and meal."
+    },
+    "confirmDelete": {
+      "title": "Delete entry?",
+      "description": "{name} ({grams} g) will be removed from this day."
+    },
+    "errors": {
+      "dateInvalid": "Invalid date.",
+      "mealInvalid": "Pick a meal.",
+      "foodRequired": "Pick a food.",
+      "foodUnavailable": "This food is no longer available.",
+      "quantityRange": "Enter 0.1–5000 g."
+    },
+    "toast": {
+      "created": "Entry added.",
+      "updated": "Entry updated.",
+      "deleted": "Entry deleted.",
+      "failed": "Something went wrong. Try again."
+    },
+    "list": {
+      "title": "List of meals"
+    }
   }
 }

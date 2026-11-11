@@ -7,6 +7,7 @@
 **`layout/`**:
 - `AppNav`: notebook index tabs for the 5 views; scrolls horizontally on mobile. No props.
 - `LanguageToggle`: PL/EN switch. Uses `useRouter().replace(pathname, { locale })`, so the current page is kept. No props.
+- Both read `usePathname` behind their own `<Suspense>`. It suspends while prerendering routes with params unknown at build time (e.g. `/planner/[date]`). The fallback looks the same: no active tab, or disabled buttons. Any new layout component that reads `usePathname` / `useParams` needs the same boundary, or `npm run build` fails.
 - `NotebookSheet({ children, className? })`: ruled-paper sheet with the margin line.
 - `PageHeader({ title, description?, actions? })`: page heading (`font-hand`) with optional actions.
 - `EmptyState({ title, description?, icon? })`: placeholder for empty or unbuilt views (`icon` is a lucide component).

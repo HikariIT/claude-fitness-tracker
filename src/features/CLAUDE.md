@@ -5,7 +5,8 @@ Each feature is a folder: `components/` (client and server UI for that feature) 
 **Slices:**
 - `profile/`: `ProfileSection` (async server component, reads settings through `server/dal`), `ProfileForm` (client, live BMR/TDEE, Save), `actions.ts` (`saveProfile`).
 - `foods/`: `FoodsSection` (async server component, `await connection()`, reads `listFoods` and `listFoodComponents`), `FoodsView` (client: search, show-removed toggle, dialogs), `FoodsTable` (shows a "Dish" badge and expandable ingredient rows), `FoodFormDialog` (add/edit, `useActionState(saveFood)`, live kcal-from-macros hint), `CompositeFoodDialog` (add/edit dish, `useActionState(saveCompositeFood)`, ingredient search, live per-100 g preview), `ConfirmFoodDialog` (confirms archive, or permanent delete of an archived food), `actions.ts` (`saveFood`, `saveCompositeFood`, `archiveFoodAction`, `restoreFoodAction`, `deleteFoodAction`).
-- `planner/`, `workouts/`, `balance/`: planned, not built yet.
+- `planner/`: `PlannerSection` (async server component, date or today, reads `getDiaryDay`, `listFoods`, `getSettings`), `PlannerView` (client: `DatePager`, "List of meals" heading with the Add button, one table, then day totals; dialog state), `EntriesTable` (all of the day's entries in one table, meal shown as a column, insertion order), `DayTotals` (stat cards, then kcal vs goal and protein vs optional protein goal), `EntryFormDialog` (add/edit, food search over non-archived foods, live preview), `ConfirmEntryDialog`, `actions.ts` (`saveDiaryEntry`, `deleteDiaryEntryAction`).
+- `workouts/`, `balance/`: planned, not built yet.
 
 **Adding a feature:**
 1. Create `features/<name>/components/` and `features/<name>/actions.ts`.

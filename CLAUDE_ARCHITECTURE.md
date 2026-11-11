@@ -30,16 +30,17 @@ fitness-tracker/
    │  │  ├─ page.tsx            # Redirects to /planner
    │  │  ├─ profile/page.tsx    # Personal data (placeholder)
    │  │  ├─ foods/page.tsx      # Food database (exists: FoodsSection in Suspense)
-   │  │  ├─ planner/page.tsx    # Food planner (placeholder)
+   │  │  ├─ planner/page.tsx    # Food planner, today (exists: PlannerSection in Suspense)
+   │  │  ├─ planner/[date]/page.tsx # Food planner, any ISO day; invalid → 404 (exists)
    │  │  ├─ workouts/page.tsx   # Workout planner (placeholder)
    │  │  ├─ balance/page.tsx    # Total balance (placeholder)
    │  │  ├─ [...rest]/page.tsx  # Catch-all → notFound()
    │  │  └─ not-found.tsx       # Localized 404
    ├─ features/                 # Vertical slices: feature-specific UI + actions
    │  ├─ CLAUDE.md
-   │  ├─ planner/
-   │  │  ├─ components/         # MealSection, EntryRow, AddEntryDialog, DayTotals
-   │  │  └─ actions.ts          # "use server": addEntry, updateEntry, deleteEntry
+   │  ├─ planner/               # Food planner (exists)
+   │  │  ├─ components/         # PlannerSection (server), PlannerView, EntriesTable, DayTotals, EntryFormDialog, ConfirmEntryDialog
+   │  │  └─ actions.ts          # "use server": saveDiaryEntry, deleteDiaryEntryAction
    │  ├─ foods/
    │  │  ├─ components/         # FoodsView, FoodsTable, FoodFormDialog, CompositeFoodDialog, ConfirmFoodDialog (exists: FoodsSection too)
    │  │  └─ actions.ts          # saveFood, saveCompositeFood, archiveFoodAction, restoreFoodAction, deleteFoodAction (exists)
@@ -81,8 +82,8 @@ fitness-tracker/
    │  └─ seed.ts                # Repeatable dev seed: Polish sample data + relation checks
    ├─ server/                   # BACKEND: data access layer (server-only)
    │  ├─ CLAUDE.md
-   │  ├─ dal/                   # Read functions: getDiaryDay(date), listFoods(), listFoodComponents(), getGoals() (exists: settings.ts, foods.ts)
-   │  └─ services/              # Multi-table writes in transactions, used by actions (exists: settings.ts, foods.ts)
+   │  ├─ dal/                   # Read functions: getDiaryDay(date), listFoods(), listFoodComponents(), getGoals() (exists: settings.ts, foods.ts, diary.ts)
+   │  └─ services/              # Multi-table writes in transactions, used by actions (exists: settings.ts, foods.ts, diary.ts)
    ├─ lib/                      # Pure, isomorphic, unit-tested
    │  ├─ CLAUDE.md
    │  ├─ validation/            # Zod schemas (drizzle-zod + refinements) per feature (exists: profile.ts, foods.ts)
@@ -90,7 +91,8 @@ fitness-tracker/
    │  ├─ composite.ts           # Dish per-100 g values, cycle check, recalculation order (exists)
    │  ├─ numbers.ts             # parseDecimal (shared by validators) (exists)
    │  ├─ search.ts              # normalizeForSearch, matchesQuery: case- and diacritics-insensitive (exists)
-   │  ├─ dates.ts               # ISO date helpers (local day, no TZ drift)
+   │  ├─ dates.ts               # ISO date helpers (local day, no TZ drift) (exists: localIsoDate, isIsoDate)
+   │  ├─ diary.ts               # Meal grouping and order, portion/total nutrition, default meal (exists)
    │  └─ utils.ts               # cn(), formatters
    └─ types/                    # Cross-cutting derived types (DiaryDayView, ActionResult<T>)
 ```
@@ -136,4 +138,4 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 3. Add the Postgres service to the compose files, and add `DATABASE_URL` to `.env.local`/`.env.production`. (done: FIT-6, plus npm run db:check)
 4. Run `shadcn init` (Tailwind 4) and add the primitives. (done: FIT-8)
 5. Write the schema, generate the first migration, and seed. (done: FIT-7, plus npm run db:generate / db:migrate / db:seed)
-6. Build foods, then profile, then the planner, workouts and balance. (done: foods FIT-11, profile FIT-10, composite foods FIT-12)
+6. Build foods, then profile, then the planner, workouts and balance. (done: foods FIT-11, profile FIT-10, composite foods FIT-12, planner FIT-13)

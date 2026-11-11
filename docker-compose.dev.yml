@@ -8,6 +8,7 @@ services:
     # Overrides .env.local (localhost) because inside compose the DB host is "db".
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/fitness_tracker
+      TZ: Europe/Warsaw # "today" in the planner is the server's local date
     volumes:
       - .:/app
       - node_modules:/app/node_modules

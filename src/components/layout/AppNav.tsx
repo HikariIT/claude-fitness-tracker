@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Apple, CalendarDays, Dumbbell, Scale, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -13,15 +14,32 @@ const items = [
   { key: "balance", href: "/balance", icon: Scale },
 ] as const;
 
+/**
+ * usePathname suspends while prerendering routes with params unknown at build time
+ * (e.g. /planner/[date]), so it sits behind a Suspense boundary. The fallback is the
+ * same nav with no active tab; fully static routes resolve the pathname in the shell.
+ */
 export function AppNav() {
-  const t = useTranslations("nav");
+  return (
+    <Suspense fallback={<NavList pathname={null} />}>
+      <ActiveNav />
+    </Suspense>
+  );
+}
+
+function ActiveNav() {
   const pathname = usePathname();
+  return <NavList pathname={pathname} />;
+}
+
+function NavList({ pathname }: { pathname: string | null }) {
+  const t = useTranslations("nav");
 
   return (
     <nav aria-label={t("label")} className="relative z-10 -mb-px">
       <ul className="flex gap-1 overflow-x-auto pb-px [scrollbar-color:var(--color-steel-blue-700)_transparent] [scrollbar-width:thin]">
         {items.map(({ key, href, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
+          const active = pathname !== null && (pathname === href || pathname.startsWith(`${href}/`));
           return (
             <li key={key} className="shrink-0">
               <Link

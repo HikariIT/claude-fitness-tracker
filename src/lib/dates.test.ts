@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { addDays, isIsoDate, isoToUtcDate } from "./dates";
+import { addDays, isIsoDate, isoToUtcDate, localIsoDate } from "./dates";
+
+describe("localIsoDate", () => {
+  it("returns the local calendar date, not the UTC one", () => {
+    expect(localIsoDate(new Date(2026, 0, 5, 23, 30))).toBe("2026-01-05");
+  });
+
+  it("pads month and day", () => {
+    expect(localIsoDate(new Date(2026, 8, 9, 0, 0))).toBe("2026-09-09");
+  });
+});
 
 describe("isIsoDate", () => {
   it("accepts real calendar dates", () => {

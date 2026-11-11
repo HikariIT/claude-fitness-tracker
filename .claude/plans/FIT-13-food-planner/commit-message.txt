@@ -1,0 +1,8 @@
+[FIT-13]: Implement Food Planner with Custom Meal Categories
+
+- Add pure diary helpers (meals, portion/total nutrition, grouping, default meal), localIsoDate, and parseDiaryEntryForm with tests
+- Add diary DAL (getDiaryDay), diary write services (create, update snapshot, delete) and planner Server Actions (saveDiaryEntry, deleteDiaryEntryAction)
+- Add planner message keys (PL/EN), EntryFormDialog (meal select, food search, grams, live preview) and ConfirmEntryDialog
+- Add planner view: PlannerSection (server, date validation), PlannerView (dialog state, DatePager), MealSection (meal table with subtotal), DayTotals (4 stat cards, kcal vs goal)
+- Wire `PlannerSection` into `/planner` (today) and the new `/planner/[date]` route (params awaited inside `<Suspense>`, invalid date → 404), put the `usePathname` parts of `AppNav` and `LanguageToggle` behind their own `<Suspense>` fallbacks so routes with unknown params prerender, and document the planner in `src/app/CLAUDE.md`, `src/features/CLAUDE.md`, `src/components/CLAUDE.md` and `CLAUDE_ARCHITECTURE.md`
+- Replace the per-meal tables with one `EntriesTable` (Meal column), put "List of meals" and "Add entry" on one line, move day totals below the table and add protein vs protein goal, box `DatePager` as a 2-line card, align every planner block to the 36px ruling, and widen `NotebookSheet` side padding

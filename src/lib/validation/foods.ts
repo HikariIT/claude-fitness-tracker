@@ -39,25 +39,45 @@ function inRange(value: number | null, min: number, max: number): value is numbe
 
 /** Reads the 5 fields from FormData and validates them per D6. Never produces "nameTaken" (the service does). */
 export function parseFoodForm(formData: FormData): FoodParseResult {
+  return validateFoodFields({
+    name: readField(formData, "name"),
+    kcal: readField(formData, "kcal"),
+    proteinG: readField(formData, "proteinG"),
+    carbsG: readField(formData, "carbsG"),
+    fatG: readField(formData, "fatG"),
+  });
+}
+
+/** Same name normalization as the form: trimmed, inner whitespace collapsed to one space. */
+export function normalizeFoodName(raw: string): string {
+  return raw.trim().replace(/\s+/g, " ");
+}
+
+/**
+ * The food rules shared by the form and the JSON import: name 1–100 chars, kcal 0–900,
+ * each macro 0–100 g, protein + carbs + fat ≤ 100 g. Numbers are strings (comma or dot),
+ * rounded to 1 decimal. Never produces "nameTaken" (the service does).
+ */
+export function validateFoodFields(raw: Record<FoodField, string>): FoodParseResult {
   const fieldErrors: Partial<Record<FoodErrorField, FoodErrorCode>> = {};
 
-  const name = readField(formData, "name").replace(/\s+/g, " ");
+  const name = normalizeFoodName(raw.name);
   if (name === "") {
     fieldErrors.name = "nameRequired";
   } else if (name.length > FOOD_NAME_MAX) {
     fieldErrors.name = "nameTooLong";
   }
 
-  const kcal = parseDecimal(readField(formData, "kcal"));
+  const kcal = parseDecimal(raw.kcal.trim());
   if (!inRange(kcal, 0, 900)) fieldErrors.kcal = "kcalRange";
 
-  const proteinG = parseDecimal(readField(formData, "proteinG"));
+  const proteinG = parseDecimal(raw.proteinG.trim());
   if (!inRange(proteinG, 0, 100)) fieldErrors.proteinG = "proteinRange";
 
-  const carbsG = parseDecimal(readField(formData, "carbsG"));
+  const carbsG = parseDecimal(raw.carbsG.trim());
   if (!inRange(carbsG, 0, 100)) fieldErrors.carbsG = "carbsRange";
 
-  const fatG = parseDecimal(readField(formData, "fatG"));
+  const fatG = parseDecimal(raw.fatG.trim());
   if (!inRange(fatG, 0, 100)) fieldErrors.fatG = "fatRange";
 
   if (

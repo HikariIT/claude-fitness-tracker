@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Notatnik Fit",
+    "name": "Fitness Tracker",
     "description": "Dziennik jedzenia i treningów z bilansem kalorii"
   },
   "nav": {
@@ -157,13 +157,37 @@
       "addComposite": "Dodaj danie",
       "removeComponent": "Usuń składnik",
       "showComponents": "Pokaż składniki: {name}",
-      "hideComponents": "Ukryj składniki: {name}"
+      "hideComponents": "Ukryj składniki: {name}",
+      "import": "Importuj JSON"
     },
     "dialog": {
       "addTitle": "Dodaj produkt",
       "editTitle": "Edytuj produkt",
       "description": "Wartości odżywcze na 100 g.",
       "editHint": "Zmiany dotyczą tylko nowych posiłków. Zapisane dni zachowują swoje wartości."
+    },
+    "import": {
+      "title": "Import produktów z JSON",
+      "description": "Wklej lub wczytaj plik JSON z maksymalnie {max} produktami. Wartości na 100 g. Jeśli którykolwiek wpis ma błąd, nic nie zostanie zaimportowane.",
+      "fileLabel": "Plik JSON",
+      "textLabel": "JSON",
+      "hint": "Wczytaj plik lub wklej JSON. Produkty zostaną sprawdzone przed importem.",
+      "ready": "{count, plural, one {# produkt gotowy do importu:} few {# produkty gotowe do importu:} many {# produktów gotowych do importu:} other {# produktu gotowego do importu:}}",
+      "previewRow": "{name}: {kcal} kcal · białko {proteinG} g · węglowodany {carbsG} g · tłuszcz {fatG} g",
+      "item": "Wpis {item}: {message}",
+      "itemNamed": "Wpis {item} ({name}): {message}",
+      "submit": "Importuj",
+      "importing": "Importowanie…",
+      "toast": "{count, plural, one {Zaimportowano # produkt} few {Zaimportowano # produkty} many {Zaimportowano # produktów} other {Zaimportowano # produktu}}",
+      "errors": {
+        "invalidJson": "To nie jest poprawny JSON.",
+        "invalidShape": "Oczekiwano listy produktów, obiektu z listą \"foods\" albo pojedynczego produktu.",
+        "empty": "Brak produktów do importu.",
+        "tooMany": "Zaimportuj naraz maksymalnie {max} produktów.",
+        "tooLarge": "JSON jest za duży.",
+        "itemNotObject": "Każdy produkt musi być obiektem z polami name, kcal, proteinG, carbsG i fatG.",
+        "nameDuplicate": "Ta nazwa występuje w pliku więcej niż raz."
+      }
     },
     "macros": {
       "hint": "≈ {kcal} kcal z makroskładników",
@@ -447,7 +471,10 @@
     }
   },
   "balance": {
-    "units": { "kcal": "kcal", "kg": "kg" },
+    "units": {
+      "kcal": "kcal",
+      "kg": "kg"
+    },
     "noProfile": {
       "title": "Brak danych osobowych",
       "description": "Bilans wymaga Twojej podstawowej przemiany materii. Najpierw uzupełnij dane osobowe.",

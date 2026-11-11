@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Apple, CookingPot, Plus } from "lucide-react";
+import { Apple, CookingPot, FileJson, Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { Food, FoodComponent } from "@/server/dal/foods";
 import { restoreFoodAction } from "@/features/foods/actions";
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CompositeFoodDialog } from "./CompositeFoodDialog";
 import { FoodFormDialog } from "./FoodFormDialog";
+import { FoodImportDialog } from "./FoodImportDialog";
 import { FoodsTable } from "./FoodsTable";
 import { ConfirmFoodDialog, type FoodConfirmIntent } from "./ConfirmFoodDialog";
 
@@ -30,6 +31,7 @@ export function FoodsView({ foods, components }: FoodsViewProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [compositeFood, setCompositeFood] = useState<Food | null>(null);
   const [compositeOpen, setCompositeOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<{
     food: Food;
     intent: FoodConfirmIntent;
@@ -124,6 +126,10 @@ export function FoodsView({ foods, components }: FoodsViewProps) {
           <CookingPot aria-hidden="true" />
           {t("actions.addComposite")}
         </Button>
+        <Button variant="outline" onClick={() => setImportOpen(true)}>
+          <FileJson aria-hidden="true" />
+          {t("actions.import")}
+        </Button>
       </div>
 
       <p className="text-muted-foreground">{t("per100g")}</p>
@@ -146,6 +152,7 @@ export function FoodsView({ foods, components }: FoodsViewProps) {
       )}
 
       <FoodFormDialog open={dialogOpen} onOpenChange={setDialogOpen} food={dialogFood} />
+      <FoodImportDialog open={importOpen} onOpenChange={setImportOpen} />
       <CompositeFoodDialog
         open={compositeOpen}
         onOpenChange={setCompositeOpen}

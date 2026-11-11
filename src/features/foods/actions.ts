@@ -12,7 +12,13 @@ import {
   type CompositeFoodErrorCode,
 } from "@/lib/validation/composite-foods";
 import {
+  foodImportErrorKey,
+  parseFoodImport,
+  type FoodImportErrorCode,
+} from "@/lib/validation/food-imports";
+import {
   archiveFood,
+  importFoods,
   createCompositeFood,
   createFood,
   deleteFood,
@@ -118,6 +124,49 @@ export async function saveCompositeFood(
 
   updateTag("foods");
   return { ok: true, data: { savedAt: Date.now(), mode } };
+}
+
+export type FoodImportFormState =
+  | ActionResult<{ importedAt: number; count: number }, FoodImportErrorCode>
+  | null;
+
+/**
+ * useActionState action for the JSON import dialog (field "json"). All or nothing.
+ * fieldErrors keys come from foodImportErrorKey: "file", "<index>" or "<index>.<field>".
+ */
+export async function importFoodsAction(
+  _prev: FoodImportFormState,
+  formData: FormData,
+): Promise<FoodImportFormState> {
+  const json = formData.get("json");
+  const parsed = parseFoodImport(typeof json === "string" ? json : "");
+  if (!parsed.ok) {
+    return {
+      ok: false,
+      code: "validation",
+      fieldErrors: Object.fromEntries(parsed.errors.map((e) => [foodImportErrorKey(e), e.code])),
+    };
+  }
+
+  let result: Awaited<ReturnType<typeof importFoods>>;
+  try {
+    result = await importFoods(parsed.data);
+  } catch (error) {
+    console.error("importFoodsAction failed", error);
+    return { ok: false, code: "unexpected" };
+  }
+  if (!result.ok) {
+    return {
+      ok: false,
+      code: "validation",
+      fieldErrors: Object.fromEntries(
+        result.takenIndexes.map((index) => [foodImportErrorKey({ index, field: "name" }), "nameTaken" as const]),
+      ),
+    };
+  }
+
+  updateTag("foods");
+  return { ok: true, data: { importedAt: Date.now(), count: result.count } };
 }
 
 /** Called directly from the list (not a form). */

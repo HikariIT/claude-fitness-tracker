@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Fit Notebook",
+    "name": "Fitness Tracker",
     "description": "Food and workout diary with a calorie balance"
   },
   "nav": {
@@ -157,13 +157,37 @@
       "addComposite": "Add dish",
       "removeComponent": "Remove ingredient",
       "showComponents": "Show ingredients of {name}",
-      "hideComponents": "Hide ingredients of {name}"
+      "hideComponents": "Hide ingredients of {name}",
+      "import": "Import JSON"
     },
     "dialog": {
       "addTitle": "Add food",
       "editTitle": "Edit food",
       "description": "Nutrition values per 100 g.",
       "editHint": "Changes apply to new meals only. Days already logged keep their values."
+    },
+    "import": {
+      "title": "Import foods from JSON",
+      "description": "Paste or load a JSON file with up to {max} foods. Values are per 100 g. If any item has an error, nothing is imported.",
+      "fileLabel": "JSON file",
+      "textLabel": "JSON",
+      "hint": "Load a file or paste JSON. The foods are checked before import.",
+      "ready": "{count, plural, one {# food ready to import:} other {# foods ready to import:}}",
+      "previewRow": "{name}: {kcal} kcal · protein {proteinG} g · carbs {carbsG} g · fat {fatG} g",
+      "item": "Item {item}: {message}",
+      "itemNamed": "Item {item} ({name}): {message}",
+      "submit": "Import",
+      "importing": "Importing…",
+      "toast": "{count, plural, one {# food imported} other {# foods imported}}",
+      "errors": {
+        "invalidJson": "This is not valid JSON.",
+        "invalidShape": "Expected a list of foods, an object with a \"foods\" list, or a single food.",
+        "empty": "There are no foods to import.",
+        "tooMany": "Import at most {max} foods at once.",
+        "tooLarge": "The JSON is too large.",
+        "itemNotObject": "Each food must be an object with name, kcal, proteinG, carbsG and fatG.",
+        "nameDuplicate": "This name appears more than once in the file."
+      }
     },
     "macros": {
       "hint": "≈ {kcal} kcal from macros",
@@ -447,7 +471,10 @@
     }
   },
   "balance": {
-    "units": { "kcal": "kcal", "kg": "kg" },
+    "units": {
+      "kcal": "kcal",
+      "kg": "kg"
+    },
     "noProfile": {
       "title": "No personal data yet",
       "description": "The balance needs your basal metabolic rate. Fill in your personal data first.",

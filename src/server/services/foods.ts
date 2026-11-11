@@ -110,6 +110,32 @@ export async function createFood(input: FoodInput): Promise<FoodWriteResult> {
   });
 }
 
+export type FoodImportWriteResult =
+  | { ok: true; count: number }
+  | { ok: false; reason: "nameTaken"; takenIndexes: number[] };
+
+/**
+ * JSON import: inserts every plain food in one transaction, or none of them.
+ * A name already used by a non-archived food (ignoring case) refuses the whole import.
+ * Input comes from parseFoodImport, so names are already unique within the batch.
+ */
+export async function importFoods(inputs: FoodInput[]): Promise<FoodImportWriteResult> {
+  return db.transaction(async (tx) => {
+    const lowered = inputs.map((input) => input.name.toLowerCase());
+    const taken = await tx
+      .select({ name: sql<string>`lower(${foods.name})` })
+      .from(foods)
+      .where(and(isNull(foods.archivedAt), inArray(sql`lower(${foods.name})`, lowered)));
+    if (taken.length > 0) {
+      const takenNames = new Set(taken.map((row) => row.name));
+      const takenIndexes = lowered.flatMap((name, index) => (takenNames.has(name) ? [index] : []));
+      return { ok: false, reason: "nameTaken", takenIndexes };
+    }
+    await tx.insert(foods).values(inputs);
+    return { ok: true, count: inputs.length };
+  });
+}
+
 /**
  * Updates only a non-archived plain food; an archived, missing or dish id → notFound
  * (D7: diary snapshots are not touched; D8: a dish is never edited as a plain food).

@@ -10,7 +10,8 @@ Next.js App Router. Every route lives under `[locale]/` (`/pl/...`, `/en/...`). 
 - `[locale]/foods/page.tsx`: food database. Async `FoodsSection` in `<Suspense>`.
 - `[locale]/planner/page.tsx`: today's food planner, renders `PlannerSection` in `<Suspense>`.
 - `[locale]/planner/[date]/page.tsx`: any ISO day (invalid → 404). No `generateStaticParams`; `params` is awaited inside `<Suspense>` and passed to `PlannerSection`.
-- `[locale]/workouts/page.tsx`: placeholder (workout planner).
+- `[locale]/workouts/page.tsx`: today's workout planner, renders `WorkoutsSection` in `<Suspense>`.
+- `[locale]/workouts/[date]/page.tsx`: any ISO day (invalid → 404). No `generateStaticParams`; `params` is awaited inside `<Suspense>` and passed to `WorkoutsSection`.
 - `[locale]/balance/page.tsx`: placeholder (total balance).
 - `[locale]/[...rest]/page.tsx`: catch-all, calls `notFound()`.
 - `[locale]/not-found.tsx`: localized 404.

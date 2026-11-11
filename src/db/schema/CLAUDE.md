@@ -8,7 +8,7 @@ Drizzle table definitions for PostgreSQL. Data model: `CLAUDE_ARCHITECTURE.md` (
 - `settings.ts`: singleton row (`id = 1`) with personal data and goals.
 - `foods.ts`: food library, nutrition per 100 g, `archivedAt`, `isComposite`, `finalWeightG`, and `food_components` (dish ingredients: `foodId` cascade, `componentFoodId` restrict, `quantityG`, unique pair).
 - `diary.ts`: `diary_entries` with nutrition snapshots and a `(date, meal)` index.
-- `workouts.ts`: `workouts`, `treadmill_sessions`, `exercises`, `workout_sets`.
+- `workouts.ts`: `workouts`, `treadmill_sessions` (no distance: it is computed), `exercises`, `workout_sets`, `daily_steps` (one row per date, `steps`, `kcal`).
 - `index.ts`: re-exports every file and defines all `relations()`.
 
 **Rules:**

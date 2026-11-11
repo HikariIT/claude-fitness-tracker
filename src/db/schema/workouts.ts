@@ -38,7 +38,6 @@ export const treadmillSessions = pgTable(
     durationMin: numeric({ precision: 5, scale: 1, mode: "number" }).notNull(),
     speedKmh: numeric({ precision: 4, scale: 1, mode: "number" }).notNull(),
     inclinePct: numeric({ precision: 4, scale: 1, mode: "number" }).notNull(),
-    distanceKm: numeric({ precision: 5, scale: 2, mode: "number" }),
     ...timestamps,
   },
   (t) => [
@@ -73,5 +72,21 @@ export const workoutSets = pgTable(
   (t) => [
     index("workout_sets_workout_id_idx").on(t.workoutId),
     check("workout_sets_reps_positive", sql`${t.reps} > 0`),
+  ],
+);
+
+// One row per day (D7). kcal is stored as entered (prefilled from an estimate in the UI).
+export const dailySteps = pgTable(
+  "daily_steps",
+  {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    date: date({ mode: "string" }).notNull().unique(),
+    steps: integer().notNull(),
+    kcal: integer().notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    check("daily_steps_steps_non_negative", sql`${t.steps} >= 0`),
+    check("daily_steps_kcal_non_negative", sql`${t.kcal} >= 0`),
   ],
 );

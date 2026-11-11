@@ -15,6 +15,13 @@
       "when": 1794352343914,
       "tag": "0001_cheerful_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794356674483,
+      "tag": "0002_workouts_steps",
+      "breakpoints": true
     }
   ]
 }

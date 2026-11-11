@@ -322,5 +322,132 @@
     "list": {
       "title": "List of meals"
     }
+  },
+  "workouts": {
+    "types": {
+      "treadmill": "Treadmill",
+      "training": "Training"
+    },
+    "list": {
+      "title": "Workouts of the day"
+    },
+    "empty": {
+      "title": "No workouts yet",
+      "description": "Add a treadmill session or a training."
+    },
+    "actions": {
+      "addTreadmill": "Treadmill",
+      "addTraining": "Training",
+      "edit": "Edit {name}",
+      "delete": "Delete {name}",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete",
+      "deleting": "Deleting…",
+      "addSet": "Add set",
+      "removeSet": "Remove set {n}",
+      "moveUp": "Move set {n} up",
+      "moveDown": "Move set {n} down",
+      "useEstimate": "Use estimate",
+      "editSteps": "Edit steps",
+      "clearSteps": "Clear",
+      "clearing": "Clearing…"
+    },
+    "dialog": {
+      "addTreadmillTitle": "New treadmill session",
+      "editTreadmillTitle": "Edit treadmill session",
+      "treadmillDescription": "Duration, average speed and slope. Calories are estimated from your weight.",
+      "addTrainingTitle": "New training",
+      "editTrainingTitle": "Edit training",
+      "trainingDescription": "Sets with exercise, reps and optional weight.",
+      "stepsTitle": "Daily steps",
+      "stepsDescription": "Steps walked this day and the calories they burned."
+    },
+    "fields": {
+      "durationMin": "Duration",
+      "speedKmh": "Average speed",
+      "inclinePct": "Slope",
+      "kcalBurned": "Calories burned",
+      "notes": "Notes (optional)",
+      "name": "Name (optional)",
+      "sets": "Sets",
+      "exercise": "Exercise",
+      "reps": "Reps",
+      "weightKg": "Weight (optional)",
+      "steps": "Steps"
+    },
+    "units": {
+      "min": "min",
+      "kmh": "km/h",
+      "pct": "%",
+      "kcal": "kcal",
+      "kg": "kg",
+      "km": "km"
+    },
+    "distance": "Distance: {km} km",
+    "estimate": {
+      "value": "Estimate: {kcal} kcal",
+      "noProfile": "Save your weight in personal data to get an estimate.",
+      "profileLink": "Personal data"
+    },
+    "exercise": {
+      "searchPlaceholder": "Search or type a new exercise",
+      "searchLabel": "Search exercises",
+      "create": "Create \"{name}\"",
+      "change": "Change",
+      "newBadge": "new"
+    },
+    "set": {
+      "label": "Set {n}"
+    },
+    "card": {
+      "treadmillSummary": "{duration} min · {speed} km/h · {incline} % · {distance} km",
+      "setLine": "{exercise}: {sets}",
+      "setWithWeight": "{reps} × {weight} kg",
+      "setNoWeight": "{reps} reps",
+      "kcal": "{kcal} kcal"
+    },
+    "steps": {
+      "title": "Steps",
+      "empty": "No steps recorded for this day.",
+      "summary": "{steps} steps · {kcal} kcal"
+    },
+    "totals": {
+      "title": "Calories burned",
+      "workouts": "Workouts",
+      "steps": "Steps",
+      "total": "Total"
+    },
+    "confirmDelete": {
+      "title": "Delete workout?",
+      "description": "\"{name}\" will be removed from this day."
+    },
+    "toast": {
+      "created": "Workout added",
+      "updated": "Workout updated",
+      "deleted": "Workout deleted",
+      "stepsSaved": "Steps saved",
+      "stepsCleared": "Steps cleared",
+      "failed": "Something went wrong. Try again."
+    },
+    "errors": {
+      "dateInvalid": "Invalid date.",
+      "typeInvalid": "Unknown workout type.",
+      "kcalRange": "Enter a whole number from 0 to 5000.",
+      "notesTooLong": "Notes can have at most 500 characters.",
+      "durationRange": "Enter 1–600 minutes.",
+      "speedRange": "Enter 0.5–25 km/h.",
+      "inclineRange": "Enter 0–15 %.",
+      "nameTooLong": "The name can have at most 100 characters.",
+      "setsRequired": "Add at least one set.",
+      "setsTooMany": "At most 100 sets.",
+      "setExerciseRequired": "Pick or create an exercise.",
+      "setExerciseNameTooLong": "The exercise name can have at most 100 characters.",
+      "setRepsRange": "Reps must be a whole number from 1 to 1000.",
+      "setWeightRange": "Enter 0–1000 kg.",
+      "exerciseUnavailable": "This exercise is no longer available.",
+      "stepsRange": "Enter a whole number from 0 to 100000."
+    }
   }
 }

@@ -32,7 +32,8 @@ fitness-tracker/
    │  │  ├─ foods/page.tsx      # Food database (exists: FoodsSection in Suspense)
    │  │  ├─ planner/page.tsx    # Food planner, today (exists: PlannerSection in Suspense)
    │  │  ├─ planner/[date]/page.tsx # Food planner, any ISO day; invalid → 404 (exists)
-   │  │  ├─ workouts/page.tsx   # Workout planner (placeholder)
+   │  │  ├─ workouts/page.tsx   # Workout planner, today (exists: WorkoutsSection in Suspense)
+   │  │  ├─ workouts/[date]/page.tsx # Workout planner, any ISO day; invalid → 404 (exists)
    │  │  ├─ balance/page.tsx    # Total balance (placeholder)
    │  │  ├─ [...rest]/page.tsx  # Catch-all → notFound()
    │  │  └─ not-found.tsx       # Localized 404
@@ -45,7 +46,9 @@ fitness-tracker/
    │  │  ├─ components/         # FoodsView, FoodsTable, FoodFormDialog, CompositeFoodDialog, ConfirmFoodDialog (exists: FoodsSection too)
    │  │  └─ actions.ts          # saveFood, saveCompositeFood, archiveFoodAction, restoreFoodAction, deleteFoodAction (exists)
    │  ├─ profile/               # Personal data form + actions.ts (was settings/) (exists: ProfileForm, ProfileSection, actions.ts)
-   │  ├─ workouts/              # Same shape
+   │  ├─ workouts/               # Workout planner (exists)
+   │  │  ├─ components/         # WorkoutsSection (server), WorkoutsView, WorkoutCard, TreadmillFormDialog, TrainingFormDialog, ExercisePicker, StepsCard, StepsFormDialog, BurnedTotals, ConfirmWorkoutDialog
+   │  │  └─ actions.ts          # saveWorkout, deleteWorkoutAction, saveSteps, clearStepsAction (exists)
    │  └─ balance/               # Daily balance components
    ├─ components/               # SHARED, feature-agnostic UI
    │  ├─ CLAUDE.md
@@ -76,13 +79,13 @@ fitness-tracker/
    │  │  ├─ settings.ts
    │  │  ├─ foods.ts
    │  │  ├─ diary.ts
-   │  │  ├─ workouts.ts         # workouts, treadmill_sessions, exercises, workout_sets
+   │  │  ├─ workouts.ts         # workouts, treadmill_sessions, exercises, workout_sets, daily_steps
    │  │  └─ index.ts            # Re-exports + relations()
    │  ├─ migrations/            # drizzle-kit generated SQL (committed)
    │  └─ seed.ts                # Repeatable dev seed: Polish sample data + relation checks
    ├─ server/                   # BACKEND: data access layer (server-only)
    │  ├─ CLAUDE.md
-   │  ├─ dal/                   # Read functions: getDiaryDay(date), listFoods(), listFoodComponents(), getGoals() (exists: settings.ts, foods.ts, diary.ts)
+   │  ├─ dal/                   # Read functions: getDiaryDay(date), listFoods(), listFoodComponents(), getGoals(), getWorkoutDay, getDailySteps, listExercises (exists: settings.ts, foods.ts, diary.ts, workouts.ts)
    │  └─ services/              # Multi-table writes in transactions, used by actions (exists: settings.ts, foods.ts, diary.ts)
    ├─ lib/                      # Pure, isomorphic, unit-tested
    │  ├─ CLAUDE.md
@@ -93,6 +96,7 @@ fitness-tracker/
    │  ├─ search.ts              # normalizeForSearch, matchesQuery: case- and diacritics-insensitive (exists)
    │  ├─ dates.ts               # ISO date helpers (local day, no TZ drift) (exists: localIsoDate, isIsoDate)
    │  ├─ diary.ts               # Meal grouping and order, portion/total nutrition, default meal (exists)
+   │  ├─ workouts.ts            # Treadmill distance, ACSM and steps kcal estimates, sumBurned, set grouping (exists)
    │  └─ utils.ts               # cn(), formatters
    └─ types/                    # Cross-cutting derived types (DiaryDayView, ActionResult<T>)
 ```
@@ -103,9 +107,10 @@ Tests sit next to their code (`*.test.ts`). They focus on `lib/` and on `server/
 - **foods**: `name`, `kcal`, `proteinG`, `carbsG`, `fatG` (all required, per 100 g), `archivedAt?`, timestamps. Removing archives the food so the history stays intact; an archived food that no diary entry references can then be deleted permanently. No basis, brand or serving size. Protein + carbs + fat ≤ 100 g. Names are unique among non-archived foods, ignoring case (enforced in the service, not the DB). A dish (`isComposite = true`, fixed at creation) is a food made of other foods. Its ingredients are in **food_components** (`foodId` cascade, `componentFoodId` restrict, `quantityG`, unique pair). Its per-100 g values are computed from the ingredient grams divided by `finalWeightG` (or the sum of grams when null) and are recalculated in the same transaction whenever an ingredient changes. Dishes may contain dishes, and cycles are refused. A food used as an ingredient may be archived but not deleted.
 - **diary_entries**: `date`, `meal` (enum breakfast/lunch/dinner/snack/other), `foodId` FK (restrict), `quantityG`, plus **snapshot** columns `kcal`, `proteinG`, `carbsG`, `fatG` computed at insert time, so later food edits don't change past days. Index on `(date, meal)`.
 - **workouts**: `type` (treadmill/training), `date`, `name?`, `notes?`, `kcalBurned?`.
-- **treadmill_sessions**: 1:1 with a workout (`workoutId` unique FK, cascade): `durationMin`, `speedKmh`, `inclinePct`, `distanceKm?`. Only treadmill workouts have one. A service enforces the type rule, not the DB.
+- **treadmill_sessions**: 1:1 with a workout (`workoutId` unique FK, cascade): `durationMin`, `speedKmh`, `inclinePct`. Distance is not stored; it is computed as speed × duration. Only treadmill workouts have one. A service enforces the type rule, not the DB.
 - **exercises**: `name` (unique), `archivedAt?`. No kind.
 - **workout_sets**: `workoutId` FK (cascade), `exerciseId` FK (restrict), `order`, `reps` (> 0), `weightKg?`. Only training workouts have sets. A service enforces this, not the DB.
+- **daily_steps**: `date` unique, `steps`, `kcal`. kcal is prefilled from `steps × weightKg × 0.0005` and stored, and stays editable.
 
 Every table has `createdAt` / `updatedAt` (`timestamptz`). Keys are integer identity columns, except the fixed `id = 1` of `settings`. Nutrition columns use `numeric` mapped to `number` through the Drizzle `mode` option. The client and `drizzle.config.ts` use `casing: "snake_case"`. Relations are classic `relations()` helpers in `schema/index.ts`. Types come from `typeof foods.$inferSelect` / `$inferInsert` and are never hand-written.
 
@@ -138,4 +143,4 @@ Form (Client, `useActionState`) → `features/*/actions.ts` → Zod `parse` → 
 3. Add the Postgres service to the compose files, and add `DATABASE_URL` to `.env.local`/`.env.production`. (done: FIT-6, plus npm run db:check)
 4. Run `shadcn init` (Tailwind 4) and add the primitives. (done: FIT-8)
 5. Write the schema, generate the first migration, and seed. (done: FIT-7, plus npm run db:generate / db:migrate / db:seed)
-6. Build foods, then profile, then the planner, workouts and balance. (done: foods FIT-11, profile FIT-10, composite foods FIT-12, planner FIT-13)
+6. Build foods, then profile, then the planner, workouts and balance. (done: foods FIT-11, profile FIT-10, composite foods FIT-12, planner FIT-13, workouts FIT-14)

@@ -322,5 +322,132 @@
     "list": {
       "title": "Lista posiłków"
     }
+  },
+  "workouts": {
+    "types": {
+      "treadmill": "Bieżnia",
+      "training": "Trening"
+    },
+    "list": {
+      "title": "Treningi dnia"
+    },
+    "empty": {
+      "title": "Brak treningów",
+      "description": "Dodaj sesję na bieżni lub trening."
+    },
+    "actions": {
+      "addTreadmill": "Bieżnia",
+      "addTraining": "Trening",
+      "edit": "Edytuj {name}",
+      "delete": "Usuń {name}",
+      "save": "Zapisz",
+      "saving": "Zapisywanie…",
+      "cancel": "Anuluj",
+      "confirmDelete": "Usuń",
+      "deleting": "Usuwanie…",
+      "addSet": "Dodaj serię",
+      "removeSet": "Usuń serię {n}",
+      "moveUp": "Przesuń serię {n} w górę",
+      "moveDown": "Przesuń serię {n} w dół",
+      "useEstimate": "Użyj szacunku",
+      "editSteps": "Edytuj kroki",
+      "clearSteps": "Wyczyść",
+      "clearing": "Czyszczenie…"
+    },
+    "dialog": {
+      "addTreadmillTitle": "Nowa sesja na bieżni",
+      "editTreadmillTitle": "Edytuj sesję na bieżni",
+      "treadmillDescription": "Czas, średnia prędkość i nachylenie. Kalorie są szacowane na podstawie Twojej wagi.",
+      "addTrainingTitle": "Nowy trening",
+      "editTrainingTitle": "Edytuj trening",
+      "trainingDescription": "Serie z ćwiczeniem, powtórzeniami i opcjonalnym ciężarem.",
+      "stepsTitle": "Kroki dzienne",
+      "stepsDescription": "Kroki zrobione tego dnia i spalone przy tym kalorie."
+    },
+    "fields": {
+      "durationMin": "Czas trwania",
+      "speedKmh": "Średnia prędkość",
+      "inclinePct": "Nachylenie",
+      "kcalBurned": "Spalone kalorie",
+      "notes": "Notatki (opcjonalnie)",
+      "name": "Nazwa (opcjonalnie)",
+      "sets": "Serie",
+      "exercise": "Ćwiczenie",
+      "reps": "Powtórzenia",
+      "weightKg": "Ciężar (opcjonalnie)",
+      "steps": "Kroki"
+    },
+    "units": {
+      "min": "min",
+      "kmh": "km/h",
+      "pct": "%",
+      "kcal": "kcal",
+      "kg": "kg",
+      "km": "km"
+    },
+    "distance": "Dystans: {km} km",
+    "estimate": {
+      "value": "Szacunek: {kcal} kcal",
+      "noProfile": "Zapisz wagę w danych osobowych, aby otrzymać szacunek.",
+      "profileLink": "Dane osobowe"
+    },
+    "exercise": {
+      "searchPlaceholder": "Szukaj lub wpisz nowe ćwiczenie",
+      "searchLabel": "Szukaj ćwiczeń",
+      "create": "Utwórz „{name}”",
+      "change": "Zmień",
+      "newBadge": "nowe"
+    },
+    "set": {
+      "label": "Seria {n}"
+    },
+    "card": {
+      "treadmillSummary": "{duration} min · {speed} km/h · {incline} % · {distance} km",
+      "setLine": "{exercise}: {sets}",
+      "setWithWeight": "{reps} × {weight} kg",
+      "setNoWeight": "{reps} powt.",
+      "kcal": "{kcal} kcal"
+    },
+    "steps": {
+      "title": "Kroki",
+      "empty": "Brak zapisanych kroków tego dnia.",
+      "summary": "{steps} kroków · {kcal} kcal"
+    },
+    "totals": {
+      "title": "Spalone kalorie",
+      "workouts": "Treningi",
+      "steps": "Kroki",
+      "total": "Razem"
+    },
+    "confirmDelete": {
+      "title": "Usunąć trening?",
+      "description": "„{name}” zostanie usunięty z tego dnia."
+    },
+    "toast": {
+      "created": "Dodano trening",
+      "updated": "Zaktualizowano trening",
+      "deleted": "Usunięto trening",
+      "stepsSaved": "Zapisano kroki",
+      "stepsCleared": "Wyczyszczono kroki",
+      "failed": "Coś poszło nie tak. Spróbuj ponownie."
+    },
+    "errors": {
+      "dateInvalid": "Nieprawidłowa data.",
+      "typeInvalid": "Nieznany typ treningu.",
+      "kcalRange": "Podaj liczbę całkowitą od 0 do 5000.",
+      "notesTooLong": "Notatki mogą mieć najwyżej 500 znaków.",
+      "durationRange": "Podaj od 1 do 600 minut.",
+      "speedRange": "Podaj od 0,5 do 25 km/h.",
+      "inclineRange": "Podaj od 0 do 15 %.",
+      "nameTooLong": "Nazwa może mieć najwyżej 100 znaków.",
+      "setsRequired": "Dodaj co najmniej jedną serię.",
+      "setsTooMany": "Najwyżej 100 serii.",
+      "setExerciseRequired": "Wybierz lub utwórz ćwiczenie.",
+      "setExerciseNameTooLong": "Nazwa ćwiczenia może mieć najwyżej 100 znaków.",
+      "setRepsRange": "Powtórzenia: liczba całkowita od 1 do 1000.",
+      "setWeightRange": "Podaj od 0 do 1000 kg.",
+      "exerciseUnavailable": "To ćwiczenie nie jest już dostępne.",
+      "stepsRange": "Podaj liczbę całkowitą od 0 do 100000."
+    }
   }
 }

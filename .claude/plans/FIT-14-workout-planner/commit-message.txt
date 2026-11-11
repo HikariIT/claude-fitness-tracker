@@ -1,0 +1,7 @@
+[FIT-14]: Implement Workout Planner with Treadmill and Training Activities
+
+- Drop treadmill distance column, add daily_steps table (migration 0002), seed steps and a check, add pure workout helpers in lib/workouts.ts, and parseInteger plus a places argument on parseDecimal
+- Add workout and steps form parsers with tests, workouts DAL, services (exercises resolved before writes, steps upsert) and Server Actions, and document them in server/CLAUDE.md
+- Add workouts message keys to en and pl, and the treadmill, steps and confirm-delete dialogs in features/workouts/components
+- Add the exercise picker with inline create, the training dialog with reorderable sets, and the workout card for treadmill and training
+- Add the workouts section and view with the steps card and burned totals, the today and any-date routes (any ISO day, invalid gives 404), and update the feature, app and architecture docs

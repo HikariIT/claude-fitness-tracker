@@ -4,6 +4,7 @@ import {
   diaryEntries,
   exercises,
   foodComponents,
+  dailySteps,
   foods,
   settings,
   treadmillSessions,
@@ -84,7 +85,7 @@ async function main() {
 
     await db.transaction(async (tx) => {
       await tx.execute(
-        sql`TRUNCATE settings, food_components, foods, diary_entries, workouts, treadmill_sessions, exercises, workout_sets RESTART IDENTITY CASCADE`,
+        sql`TRUNCATE settings, food_components, foods, diary_entries, workouts, treadmill_sessions, exercises, workout_sets, daily_steps RESTART IDENTITY CASCADE`,
       );
 
       await tx.insert(settings).values({
@@ -168,7 +169,6 @@ async function main() {
         durationMin: 40,
         speedKmh: 6.5,
         inclinePct: 8,
-        distanceKm: 4.33,
       });
 
       const [training] = await tx
@@ -189,6 +189,11 @@ async function main() {
         { workoutId: training.id, exerciseId: bench.id, order: 4, reps: 8, weightKg: 42.5 },
         { workoutId: training.id, exerciseId: deadlift.id, order: 5, reps: 5, weightKg: 80 },
         { workoutId: training.id, exerciseId: deadlift.id, order: 6, reps: 7, weightKg: null },
+      ]);
+
+      await tx.insert(dailySteps).values([
+        { date: today, steps: 8500, kcal: 340 },
+        { date: yesterday, steps: 6200, kcal: 248 },
       ]);
     });
 
@@ -265,6 +270,10 @@ async function main() {
       trainingWorkout?.sets.every((s) => s.exercise !== null) ?? false,
       true,
     );
+
+    const stepsRows = await db.select().from(dailySteps);
+    expect("daily steps count", stepsRows.length, 2);
+    expect("steps are numbers", stepsRows.find((r) => r.date === today)?.steps, 8500);
 
     const settingsRow = await db.query.settings.findFirst();
     expect("settings row id", settingsRow?.id, 1);

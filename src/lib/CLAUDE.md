@@ -4,7 +4,8 @@ Isomorphic helpers with no side effects. Tests sit next to the code (`*.test.ts`
 
 **Files:**
 - `dates.ts`: ISO date helpers (`isIsoDate`, `isoToUtcDate`, `addDays`), and `localIsoDate` (today's local date as `YYYY-MM-DD`). Local day strings, no timezone drift.
-- `numbers.ts`: `parseDecimal` (comma or dot decimal separator), shared by validators.
+- `numbers.ts`: `parseDecimal(raw, places = 1)` (comma or dot decimal separator), `parseInteger` (non-negative whole number), shared by validators.
+- `workouts.ts`: `WORKOUT_TYPES`, `isWorkoutType`, `treadmillDistanceKm` (D3), `estimateTreadmillKcal` (ACSM walking/running, D4), `estimateStepsKcal` (D7), `sumBurned` (D10), `groupConsecutiveSets` (workout card grouping). `WORKOUT_TYPES` must match `workoutTypeEnum`.
 - `search.ts`: `normalizeForSearch`, `matchesQuery`. Case- and diacritics-insensitive, `ł` → `l`.
 - `nutrition.ts`: `SEXES`, `ACTIVITY_LEVELS`, `ACTIVITY_MULTIPLIERS` (D5), `ageOn`, `calcBmr` (Mifflin-St Jeor, D1), `calcTdee`, `kcalFromMacros` (4/4/9).
 - `validation/profile.ts`: `parseProfileForm(formData, today)` returns `{ ok, data }` or `{ ok: false, fieldErrors }`. Errors are stable codes (`PROFILE_ERROR_CODES`, e.g. `heightRange`), never strings (D7).
